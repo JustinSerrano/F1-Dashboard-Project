@@ -5,14 +5,12 @@ const domain = `https://www.randyconnolly.com/funwebdev/3rd/api/f1`;
 document.addEventListener("DOMContentLoaded", function () {
 
     // Loaders and sections
-    const loader1 = document.querySelector("#loader1");
+    const browseLoader = document.querySelector("#browseLoader");
     const browseSection = document.querySelector("#browse");
-    const raceResultsSection = document.querySelector("#raceResults");
 
     // First hide loaders and sections
-    loader1.style.display = "none";
+    browseLoader.style.display = "none";
     browseSection.style.display = "none"
-    raceResultsSection.style.display = "none";
 
     // Populate <select> season list with options
     populateSeasons();
@@ -26,8 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const resultsKey = `results_${selectedSeason}`;
         const qualifyingKey = `qualifying_${selectedSeason}`;
 
-        // Display loader
-        loader1.style.display = "block";
+        // Display the browse loader
+        browseLoader.style.display = "block";
         browseSection.style.display = "none";
 
         // Check if data for the season already exists in localStorage
@@ -39,28 +37,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
             //Fetch new data
             getSeasonData(selectedSeason).then(data => {
-                displayRaces(data[0]);
+
+                // Hide the loader and show the browse section
+                browseLoader.style.display = "none";
+                browseSection.style.display = "block";
+
+                displayRaces(data[0], selectedSeason);
 
                 // Save all data in localStorage
                 localStorage.setItem(racesKey, JSON.stringify(data[0]));
                 localStorage.setItem(resultsKey, JSON.stringify(data[1]));
                 localStorage.setItem(qualifyingKey, JSON.stringify(data[2]));
-
-                // Hide loader and display content
-                loader1.style.display = "none";
-                browseSection.style.display = "block";
             }).catch(error => {
                 console.log("Data fetch failed:", error);
-                loader1.style.display = "none";
+                browseLoader.style.display = "none";
             })
         } else {
-            // Load locally stored data
-            displayRaces(JSON.parse(racesData));
+            // Display the browse loader
+            browseLoader.style.display = "block";
+            browseSection.style.display = "none"
 
-            // Display races and then hide results and qualifying area
-            loader1.style.display = "none";
+            // Load locally stored data
+            displayRaces(JSON.parse(racesData), selectedSeason);
+
+            // Hide loader and display browse section
+            browseLoader.style.display = "none";
             browseSection.style.display = "block";
-            raceResultsSection.style.display = "none";
         }
     })
 })
@@ -104,8 +106,18 @@ function getSeasonData(season) {
 }
 
 // Display races data
-function displayRaces(data) {
-    const raceList = document.querySelector("#raceList");
-    raceList.innerHTML = "";
+function displayRaces(data, season) {
+    const races = document.querySelector("#races");
+    races.innerHTML ="";
+
+    // Header
+    const h2 = document.createElement("h2");
+    h2.textContent = `${season} Races`;
+    races.appendChild(h2);
+
+    // Populate raceList
+    const raceList = document.createElement("ul");
+    raceList.id = "raceList";
     raceList.innerHTML = data.map(race => `<li>${race.name}</li>`).join("");
+    races.appendChild(raceList);
 }
