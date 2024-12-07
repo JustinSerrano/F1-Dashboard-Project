@@ -110,12 +110,12 @@ function displayRaces(data, season) {
     const races = document.querySelector("#races");
     races.innerHTML ="";
 
-    // Header
+    // Create header
     const h2 = document.createElement("h2");
     h2.textContent = `${season} Races`;
     races.appendChild(h2);
 
-    // Populate raceList
+    // Create raceList
     const raceList = document.createElement("ul");
     raceList.id = "raceList";
     raceList.innerHTML = data.map(race => `<li>${race.name}</li>`).join("");
