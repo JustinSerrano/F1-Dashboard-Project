@@ -9,8 +9,8 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
     <title>F1 Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="script/script.js"></script>
 </head>
 
 <body>
@@ -23,15 +23,15 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
             <p>Provide a brief description, styled nicely, about what this site is about, what technologies you are
                 using, the group member names, and the URL for the GitHub repo</p>
             <h2>Season</h2>
-            <select id="seasonList">
-                <option>Select a season</option>
-                <option>2020</option>
-                <option>2021</option>
-                <option>2022</option>
-                <option>2023</option>
-            </select>
+            <select id="seasonList"></select>
         </article>
-        <article id="browse" style="display: none;">
+        <article id="browse">
+            <div id="browseLoader" class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
             <section id="races">
                 <h2>Races</h2>
                 <ul id="raceList"></ul>
