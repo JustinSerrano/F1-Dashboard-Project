@@ -15,7 +15,7 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
 
 <body>
     <header>
-        <img src="img\mru-logo.jpg" height="100px" width="150px" />
+        <img src="img\mru-logo.jpg" alt="MRU logo" height="100px" width="150px" />
         <h1>F1 Dashboard</h1>
     </header>
     <main>
@@ -23,9 +23,11 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
             <p>Provide a brief description, styled nicely, about what this site is about, what technologies you are
                 using, the group member names, and the URL for the GitHub repo</p>
             <h2>Season</h2>
-            <select id="seasonList"></select>
+            <select id="seasonList">
+                <option>Select a season</option>
+            </select>
         </article>
-        <article id="browse">
+        <article id="browse" style="display: none;">
             <section id="races">
                 <h2>Races</h2>
                 <ul id="raceList"></ul>
@@ -45,17 +47,17 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
     </main>
     <dialog id="circuit">
         <h2>Circuit Details</h2>
-        <img>
+        <img src="https://placehold.co/150x100" alt="Circuit image placeholder">
         <ul id="circuitDetails"></ul>
     </dialog>
     <dialog id="driver">
         <h2>Driver Details</h2>
-        <img>
+        <img src="https://placehold.co/150x100" alt="Driver image placeholder">
         <ul id="driverDetails"></ul>
     </dialog>
     <dialog id="constructor">
         <h2>Constructor Details</h2>
-        <img>
+        <img src="https://placehold.co/150x100" alt="Constructor image placeholder">
         <ul id="constructorDetails"></ul>
     </dialog>
 </body>
