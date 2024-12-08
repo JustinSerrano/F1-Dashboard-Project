@@ -1,3 +1,11 @@
+#browseLoader {
+    display: none;
+}
+
+#raceResults {
+    display: none;
+}
+
 /* CSS Loader source: https://loading.io/css/ */
 
 .lds-ring {

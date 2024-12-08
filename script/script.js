@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 browseLoader.style.display = "none";
                 browseSection.style.display = "block";
 
-                displayRaces(data[0], selectedSeason);
+                displayRaces(data[0], data[1], data[2], selectedSeason);
 
                 // Save all data in localStorage
                 localStorage.setItem(racesKey, JSON.stringify(data[0]));
@@ -58,7 +58,16 @@ document.addEventListener("DOMContentLoaded", function () {
             browseSection.style.display = "none"
 
             // Load locally stored data
-            displayRaces(JSON.parse(racesData), selectedSeason);
+            racesData = JSON.parse(localStorage.getItem(racesKey));
+            qualifyingData = JSON.parse(localStorage.getItem(qualifyingKey));
+            resultsData = JSON.parse(localStorage.getItem(resultsKey));
+
+            // console.log(racesData);
+            // console.log(qualifyingData);
+            // console.log(resultsData);
+
+            // Display races
+            displayRaces(racesData, qualifyingData, resultsData, selectedSeason);
 
             // Hide loader and display browse section
             browseLoader.style.display = "none";
@@ -106,18 +115,60 @@ function getSeasonData(season) {
 }
 
 // Display races data
-function displayRaces(data, season) {
+function displayRaces(racesData, qualifyingData, resultsData, selectedSeason) {
     const races = document.querySelector("#races");
-    races.innerHTML ="";
+    races.innerHTML = "";
 
     // Create header
     const h2 = document.createElement("h2");
-    h2.textContent = `${season} Races`;
+    h2.textContent = `${selectedSeason} Races`;
     races.appendChild(h2);
 
     // Create raceList
     const raceList = document.createElement("ul");
     raceList.id = "raceList";
-    raceList.innerHTML = data.map(race => `<li>${race.name}</li>`).join("");
+
+    // Populate raceList with buttons
+    racesData.forEach(race => {
+        const li = document.createElement("li");
+        const button = document.createElement("button");
+        button.textContent = race.name;
+        button.addEventListener("click", () => populateRaceDetails(race, qualifyingData, resultsData));
+        li.appendChild(button);
+        raceList.appendChild(li);
+    })
     races.appendChild(raceList);
+}
+
+// Populate race details
+function populateRaceDetails(race, qualifyingData, resultsData) {
+    const raceResultsSection = document.querySelector("#raceResults");
+
+    // Update headaer
+    const resultsHeader = document.querySelector("#raceResults h2");
+    resultsHeader.textContent = `Results for ${race.year} ${race.name}`;
+
+    // Populate qualifying data
+    const qualifyingList = document.querySelector("#qualifyingList");
+    qualifyingList.innerHTML = "";
+    const filteredQualifying = qualifyingData.filter(q => q.race.round === race.round);
+
+    filteredQualifying.forEach(q => {
+        console.log(q)
+        const li = document.createElement("li");
+        li.textContent = `${q.position}: ${q.driver.forename} ${q.driver.surname} (${q.constructor.name}) - Q1: ${q.q1 || "-"}, Q2: ${q.q2 || "-"}, Q3: ${q.q3 || "-"}`;
+        qualifyingList.appendChild(li);
+    })
+
+    // Populate results data
+    const resultsList = document.querySelector("#resultsList");
+    resultsList.innerHTML = "";
+    const filteredResults = resultsData.filter(r => r.race.round === race.round);
+    filteredResults.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = `${r.position}: ${r.driver.forename} ${r.driver.surname} (${r.constructor.name}) - Laps: ${r.laps}, Points: ${r.points}`;
+        resultsList.appendChild(li);
+    })
+    // Display raceResults section
+    raceResultsSection.style.display = "block";
 }
