@@ -220,89 +220,129 @@ function createHyperlink(text, action) {
     return link;
 }
 
-// Show dialog with dynamic content based on type
+// Modal class to handle dynamic rendering
+class Modal {
+    constructor(type, data, resultsData = [], selectedSeason = null) {
+        this.type = type;
+        this.data = data;
+        this.resultsData = resultsData;
+        this.selectedSeason = selectedSeason;
+    }
+
+    async render() {
+        const dialog = document.querySelector(`#${this.type}`);
+        const detailsList = dialog.querySelector(`#${this.type}Details`);
+
+        try {
+            // Fetch specific data
+            const fetchedData = await this.fetchDetails();
+
+            let content = "";
+            if (this.type === "circuit") {
+                content = this.renderCircuit(fetchedData);
+            } else if (this.type === "driver") {
+                content = this.renderDriver(fetchedData);
+            } else if (this.type === "constructor") {
+                content = this.renderConstructor(fetchedData);
+            }
+
+            detailsList.innerHTML = content;
+            dialog.showModal();
+        } catch (error) {
+            console.error(`Error fetching ${this.type} data:`, error);
+            detailsList.innerHTML = `<li>Error loading details. Please try again later.</li>`;
+            dialog.showModal();
+        }
+    }
+
+    async fetchDetails() {
+        let endpoint;
+        switch (this.type) {
+            case "circuit":
+                endpoint = `${API_DOMAIN}/circuits.php`;
+                break;
+            case "driver":
+                endpoint = `${API_DOMAIN}/drivers.php`;
+                break;
+            case "constructor":
+                endpoint = `${API_DOMAIN}/constructors.php`;
+                break;
+            default:
+                throw new Error("Invalid type for fetching details");
+        }
+
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error(`Failed to fetch ${this.type} details`);
+
+        const data = await response.json();
+        const matchedData = data.find(
+            (item) => item.id === this.data.id || item.name === this.data.name
+        );
+
+        if (!matchedData) throw new Error(`No matching ${this.type} found`);
+        return matchedData;
+    }
+
+    renderCircuit(circuitData) {
+        return `
+            <li><strong>Name:</strong> ${circuitData.name}</li>
+            <li><strong>Location:</strong> ${circuitData.location}, ${circuitData.country}</li>
+            <li><strong>URL:</strong> <a href="${circuitData.url}" target="_blank">${circuitData.url}</a></li>
+        `;
+    }
+
+    renderDriver(driverData) {
+        const raceResults = this.resultsData
+            .filter((r) => r.driver.forename === driverData.forename && r.driver.surname === driverData.surname)
+            .sort((a, b) => a.race.round - b.race.round)
+            .map(
+                (r) =>
+                    `<li>Round ${r.race.round}: Constructor: ${r.constructor.name}, Position: ${r.position}, Points: ${r.points}</li>`
+            );
+
+        return `
+            <li><strong>Name:</strong> ${driverData.forename} ${driverData.surname}</li>
+            <li><strong>Date of Birth:</strong> ${driverData.dob}</li>
+            <li><strong>Nationality:</strong> ${driverData.nationality}</li>
+            <li><strong>URL:</strong> <a href="${driverData.url}" target="_blank">${driverData.url}</a></li>
+            <h3>Race Results (${this.selectedSeason})</h3>
+            ${this.createScrollableList(raceResults)}
+        `;
+    }
+
+    renderConstructor(constructorData) {
+        const raceResults = this.resultsData
+            .filter((r) => r.constructor.name === constructorData.name)
+            .sort((a, b) => a.race.round - b.race.round)
+            .map(
+                (r) =>
+                    `<li>Round ${r.race.round}: Driver: ${r.driver.forename} ${r.driver.surname}, Position: ${r.position}, Points: ${r.points}</li>`
+            );
+
+        return `
+            <li><strong>Name:</strong> ${constructorData.name}</li>
+            <li><strong>Nationality:</strong> ${constructorData.nationality}</li>
+            <li><strong>URL:</strong> <a href="${constructorData.url}" target="_blank">${constructorData.url}</a></li>
+            <h3>Race Results (${this.selectedSeason})</h3>
+            ${this.createScrollableList(raceResults)}
+        `;
+    }
+
+    createScrollableList(items) {
+        return `
+            <ul style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ddd;">
+                ${items.join("")}
+            </ul>
+        `;
+    }
+}
+
+// Helper function to show a modal
 function showDialog(type, data, resultsData = [], selectedSeason = null) {
-    const dialog = document.querySelector(`#${type}`);
-    const detailsList = dialog.querySelector(`#${type}Details`);
-    let content = "";
-
-    switch (type) {
-        case "circuit":
-            content = `
-                <li><strong>Name:</strong> ${data.name}</li>
-                <li><strong>Location:</strong> ${data.location.locality}, ${data.location.country}</li>
-                <li><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></li>
-            `;
-            break;
-
-        case "constructor":
-            content = `
-                <li><strong>Name:</strong> ${data.name}</li>
-                <li><strong>Nationality:</strong> ${data.nationality}</li>
-                <li><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></li>
-                <h3>Race Results (${selectedSeason})</h3>
-                ${createScrollableList(
-                resultsData
-                    .filter((r) => r.constructor.name === data.name)
-                    .sort((a, b) => a.race.round - b.race.round)
-                    .map(
-                        (r) =>
-                            `<li>Round ${r.race.round}: ${r.driver.forename} ${r.driver.surname} - Position: ${r.position}, Points: ${r.points}</li>`
-                    )
-            )}
-            `;
-            break;
-
-        case "driver":
-            console.log(data)
-            const age = calculateAge(data.dob);
-            content = `
-                <li><strong>Name:</strong> ${data.forename} ${data.surname}</li>
-                <li><strong>Date of Birth:</strong> ${data.dateOfBirth}</li>
-                <li><strong>Age:</strong> ${age}</li>
-                <li><strong>Nationality:</strong> ${data.nationality}</li>
-                <li><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></li>
-                <h3>Race Results (${selectedSeason})</h3>
-                ${createScrollableList(
-                resultsData
-                    .filter((r) => r.driver.forename === data.forename && r.driver.surname === data.surname)
-                    .sort((a, b) => a.race.round - b.race.round)
-                    .map(
-                        (r) =>
-                            `<li>Round ${r.race.round}: Constructor: ${r.constructor.name}, Position: ${r.position}, Points: ${r.points}</li>`
-                    )
-            )}
-            `;
-            break;
-
-        default:
-            content = "<li>No details available</li>";
-    }
-
-    detailsList.innerHTML = content;
-    dialog.showModal();
+    const modal = new Modal(type, data, resultsData, selectedSeason);
+    modal.render();
 }
 
-// Helper function to create a scrollable list
-function createScrollableList(items) {
-    return `
-        <ul style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ddd;">
-            ${items.join("")}
-        </ul>
-    `;
-}
-
-// Helper function to calculate age
-function calculateAge(dateOfBirth) {
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-        age--;
-    }
-    return age;
-}
 
 
 // Add event listeners to close buttons
