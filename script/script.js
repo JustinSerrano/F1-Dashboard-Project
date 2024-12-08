@@ -186,6 +186,10 @@ function populateRaceDetails(race, qualifyingData, resultsData) {
     const resultsSection = document.querySelector("#raceResults");
     document.querySelector("#raceResults h2").innerHTML = `Results for ${race.year} <button class="hyperlink-style" id="circuitLink">${race.name}</button>`;
 
+    document.querySelector("#circuitLink").addEventListener("click", () => {
+        showCircuitDetails(race.circuit);
+    });
+
     populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"], resultsData);
     populateTable("#results", "Race Results", resultsData, race, ["Position", "Driver", "Constructor", "Laps", "Points"], resultsData);
 
@@ -193,7 +197,7 @@ function populateRaceDetails(race, qualifyingData, resultsData) {
 }
 
 // Populate a table with data
-function populateTable(selector, title, data, race, headers) {
+function populateTable(selector, title, data, race, headers, resultsData) {
     const container = document.querySelector(selector);
     container.innerHTML = `<h3>${title}</h3>`;
 
@@ -205,8 +209,10 @@ function populateTable(selector, title, data, race, headers) {
                 // For Qualifying Table
                 return [
                     item.position,
-                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`),
-                    createHyperlink(item.constructor?.name),
+                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
+                        fetchAndShowDriverDetails(item.driver.ref, item.race.year, resultsData)),
+                    createHyperlink(item.constructor?.name, () =>
+                        fetchAndShowConstructorDetails(item.constructor.name, item.race.year, resultsData)),
                     item.q1 || "-",
                     item.q2 || "-",
                     item.q3 || "-",
@@ -215,8 +221,10 @@ function populateTable(selector, title, data, race, headers) {
                 // For Race Results Table
                 return [
                     item.position,
-                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`),
-                    createHyperlink(item.constructor?.name),
+                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
+                        fetchAndShowDriverDetails(item.driver.ref, item.race.year, resultsData)),
+                    createHyperlink(item.constructor?.name, () =>
+                        fetchAndShowConstructorDetails(item.constructor.name, item.race.year, resultsData)),
                     item.laps || "-",
                     item.points || "-",
                 ];
@@ -226,7 +234,6 @@ function populateTable(selector, title, data, race, headers) {
     container.appendChild(createTable(headers, rows));
 }
 
-
 // Create hyperlink
 function createHyperlink(text, action) {
     const link = document.createElement("button");
@@ -235,6 +242,125 @@ function createHyperlink(text, action) {
     link.addEventListener("click", action);
     return link;
 }
+
+function showCircuitDetails(circuit) {
+    const dialog = document.querySelector("#circuit");
+    const detailsList = document.querySelector("#circuitDetails");
+
+    try {
+        // Populate dialog with circuit details directly from the race object
+        detailsList.innerHTML = `
+            <li><strong>Name:</strong> ${circuit.name}</li>
+            <li><strong>Location:</strong> ${circuit.location}, ${circuit.country}</li>
+            <li><strong>URL:</strong> <a href="${circuit.url}" target="_blank">${circuit.url}</a></li>
+        `;
+
+        // Show the dialog
+        dialog.showModal();
+    } catch (error) {
+        console.error("Error displaying circuit details:", error);
+        detailsList.innerHTML = `<li>Error loading circuit details. Please try again later.</li>`;
+        dialog.showModal();
+    }
+}
+
+// Fetch and Display Driver Details
+async function fetchAndShowDriverDetails(driverRef, year, resultsData) {
+    const driverEndpoint = `${API_DOMAIN}/drivers.php`;
+    const driverDialog = document.querySelector("#driver");
+    const driverDetails = document.querySelector("#driverDetails");
+
+    try {
+        // Fetch all drivers
+        const driverResponse = await fetch(driverEndpoint);
+        if (!driverResponse.ok) throw new Error("Driver details not found");
+        const allDrivers = await driverResponse.json();
+
+        // Find the specific driver by driverRef
+        const driverInfo = allDrivers.find((driver) => driver.driverRef === driverRef);
+        if (!driverInfo) throw new Error("Driver not found");
+
+        // Filter resultsData for the specific driver and year
+        const driverResults = resultsData.filter(
+            (result) => result.driver.ref === driverRef && result.race.year === parseInt(year)
+        );
+        if (!driverResults.length) throw new Error("No race results available for this driver in the selected year");
+
+        // Format race results
+        const raceResults = driverResults.map(
+            (race) =>
+                `<li>Round ${race.race.round}: ${race.race.name}, Position: ${race.position}, Points: ${race.points || 0}</li>`
+        );
+
+        // Render Driver Details
+        driverDetails.innerHTML = `
+            <li><strong>Name:</strong> ${driverInfo.forename} ${driverInfo.surname}</li>
+            <li><strong>Date of Birth:</strong> ${driverInfo.dob || "N/A"}</li>
+            <li><strong>Nationality:</strong> ${driverInfo.nationality || "N/A"}</li>
+            <li><strong>URL:</strong> <a href="${driverInfo.url || "#"}" target="_blank">${driverInfo.url || "N/A"}</a></li>
+            <h3>Race Results</h3>
+            <ul class="scrollable-list">${raceResults.join("")}</ul>
+        `;
+
+        // Show modal
+        driverDialog.showModal();
+    } catch (error) {
+        console.error("Error fetching driver details:", error);
+        driverDetails.innerHTML = `<li>Error loading driver details. Please try again later.</li>`;
+        driverDialog.showModal();
+    }
+}
+
+// Fetch and Display Constructor Details
+async function fetchAndShowConstructorDetails(constructorName, year, resultsData) {
+    const constructorEndpoint = `${API_DOMAIN}/constructors.php`;
+    const constructorDialog = document.querySelector("#constructor");
+    const constructorDetails = document.querySelector("#constructorDetails");
+
+    try {
+        // Fetch all constructors
+        const constructorResponse = await fetch(constructorEndpoint);
+        if (!constructorResponse.ok) throw new Error("Constructor details not found");
+        const allConstructors = await constructorResponse.json();
+
+        // Find the specific constructor by name
+        const constructorInfo = allConstructors.find((constructor) => constructor.name === constructorName);
+        if (!constructorInfo) throw new Error("Constructor not found");
+
+        // Filter resultsData for the specific constructor and year
+        const constructorResults = resultsData.filter(
+            (result) => result.constructor.name === constructorName && result.race.year === parseInt(year)
+        );
+        if (!constructorResults.length) throw new Error("No race results available for this constructor in the selected year");
+
+        console.log(constructorInfo);
+        console.log(constructorResults);
+
+        // Format race results
+        const raceResults = constructorResults.map(
+            (result) =>
+                `<li>Round ${result.race.round}: ${result.race.name}, Driver: ${result.driver.forename} ${result.driver.surname}, Position: ${result.position}, Points: ${result.points || 0}</li>`
+        );
+
+        // Render Constructor Details
+        constructorDetails.innerHTML = `
+            <li><strong>Name:</strong> ${constructorInfo.name}</li>
+            <li><strong>Nationality:</strong> ${constructorInfo.nationality || "N/A"}</li>
+            <li><strong>URL:</strong> <a href="${constructorInfo.url || "#"}" target="_blank">${constructorInfo.url || "N/A"}</a></li>
+            <h3>Race Results</h3>
+            <ul class="scrollable-list">${raceResults.join("")}</ul>
+        `;
+
+        // Show modal
+        constructorDialog.showModal();
+    } catch (error) {
+        console.error("Error fetching constructor details:", error);
+        constructorDetails.innerHTML = `<li>Error loading constructor details. Please try again later.</li>`;
+        constructorDialog.showModal();
+    }
+}
+
+
 
 // Add event listeners to close buttons
 function addDialogCloseListeners() {
