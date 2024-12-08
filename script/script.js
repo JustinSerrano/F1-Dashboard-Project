@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }).catch(error => {
                 console.log("Data fetch failed:", error);
                 browseLoader.style.display = "none";
+                alert("Failed to fetch data. Please try again.");
             })
         } else {
             // Display the browse loader
@@ -61,10 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
             racesData = JSON.parse(localStorage.getItem(racesKey));
             qualifyingData = JSON.parse(localStorage.getItem(qualifyingKey));
             resultsData = JSON.parse(localStorage.getItem(resultsKey));
-
-            // console.log(racesData);
-            // console.log(qualifyingData);
-            // console.log(resultsData);
 
             // Display races
             displayRaces(racesData, qualifyingData, resultsData, selectedSeason);
