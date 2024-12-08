@@ -24,6 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const resultsKey = `results_${selectedSeason}`;
         const qualifyingKey = `qualifying_${selectedSeason}`;
 
+        // Hide the home section
+        const homeSection = document.querySelector("#home");
+        homeSection.style.display = "none";
+
         // Display the browse loader
         browseLoader.style.display = "block";
         browseSection.style.display = "none";
@@ -71,6 +75,24 @@ document.addEventListener("DOMContentLoaded", function () {
             browseSection.style.display = "block";
         }
     })
+
+    // MRU logo returns to home section
+    document.querySelector("#mruLogo").addEventListener("click", function () {
+        const homeSection = document.querySelector("#home");
+        const browseSection = document.querySelector("#browse");
+        const raceResultsSection = document.querySelector("#raceResults");
+
+        homeSection.style.display = "block";
+        browseSection.style.display = "none";
+        raceResultsSection.style.display = "none";
+
+        // Reset any displayed race details
+        document.querySelector("#qualifying").innerHTML = "";
+        document.querySelector("#results").innerHTML = "";
+
+        // Reset season dropdown
+        document.querySelector("#seasonList").value = "";
+    });
 })
 
 // Populate seasonList <select> tag with years
@@ -111,6 +133,39 @@ function getSeasonData(season) {
     return Promise.all([prom1, prom2, prom3]);
 }
 
+// Abstract table creation helper function
+function createTable(headers, rows) {
+    const table = document.createElement("table");
+
+    // Create table headers
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table rows
+    const tbody = document.createElement("tbody");
+    rows.forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+            const td = document.createElement("td");
+            td.textContent = cell;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+
+    return table;
+}
+
+
+
 // Display races data
 function displayRaces(racesData, qualifyingData, resultsData, selectedSeason) {
     const races = document.querySelector("#races");
@@ -121,43 +176,25 @@ function displayRaces(racesData, qualifyingData, resultsData, selectedSeason) {
     h2.textContent = `${selectedSeason} Races`;
     races.appendChild(h2);
 
-    // Create a table for races
-    const table = document.createElement("table");
-    table.innerHTML = `
-        <thead>
-            <tr>
-                <th>Round</th>
-                <th>Race Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="raceTableBody"></tbody>
-    `;
+    // Prepare data for the table
+    const headers = ["Round", "Race Name", "Action"];
+    const rows = racesData.sort((a, b) => a.round - b.round).map(race => [
+        race.round,
+        race.name,
+        "View Details"
+    ]);
 
-    // Sort racesData by round
-    const sortedRaces = racesData.sort((a, b) => a.round - b.round);
+    // Generate the table
+    const table = createTable(headers, rows);
 
-    // Populate table with race data
-    const tbody = table.querySelector("#raceTableBody");
-    sortedRaces.forEach(race => {
-        const tr = document.createElement("tr");
-
-        const roundCell = document.createElement("td");
-        roundCell.textContent = race.round;
-
-        const nameCell = document.createElement("td");
-        nameCell.textContent = race.name;
-
-        const actionCell = document.createElement("td");
+    // Add event listeners to "View Details" buttons
+    const buttons = table.querySelectorAll("tbody tr td:last-child");
+    buttons.forEach((cell, index) => {
         const button = document.createElement("button");
         button.textContent = "View Details";
-        button.addEventListener("click", () => populateRaceDetails(race, qualifyingData, resultsData));
-        actionCell.appendChild(button);
-
-        tr.appendChild(roundCell);
-        tr.appendChild(nameCell);
-        tr.appendChild(actionCell);
-        tbody.appendChild(tr);
+        button.addEventListener("click", () => populateRaceDetails(racesData[index], qualifyingData, resultsData));
+        cell.textContent = ""; // Clear placeholder text
+        cell.appendChild(button);
     });
 
     races.appendChild(table);
@@ -171,77 +208,42 @@ function populateRaceDetails(race, qualifyingData, resultsData) {
     const resultsHeader = document.querySelector("#raceResults h2");
     resultsHeader.textContent = `Results for ${race.year} ${race.name}`;
 
-    // Populate qualifying data with a table
+    // Populate qualifying table
     const qualifyingList = document.querySelector("#qualifying");
-    qualifyingList.innerHTML = "";
-    qualifyingList.innerHTML = `
-        <h3>Qualifying</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Driver</th>
-                    <th>Constructor</th>
-                    <th>Q1</th>
-                    <th>Q2</th>
-                    <th>Q3</th>
-                </tr>
-            </thead>
-            <tbody id="qualifyingTableBody"></tbody>
-        </table>
-    `;
-    const qualifyingBody = qualifyingList.querySelector("#qualifyingTableBody");
-    const filteredQualifying = qualifyingData.filter(q => q.race.round === race.round);
+    qualifyingList.innerHTML = "<h3>Qualifying</h3>";
 
-    filteredQualifying.forEach(q => {
-        const tr = document.createElement("tr");
+    const qualifyingHeaders = ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"];
+    const qualifyingRows = qualifyingData
+        .filter(q => q.race.round === race.round)
+        .map(q => [
+            q.position,
+            `${q.driver.forename} ${q.driver.surname}`,
+            q.constructor.name,
+            q.q1 || "-",
+            q.q2 || "-",
+            q.q3 || "-"
+        ]);
 
-        tr.innerHTML = `
-            <td>${q.position}</td>
-            <td>${q.driver.forename} ${q.driver.surname}</td>
-            <td>${q.constructor.name}</td>
-            <td>${q.q1 || "-"}</td>
-            <td>${q.q2 || "-"}</td>
-            <td>${q.q3 || "-"}</td>
-        `;
+    const qualifyingTable = createTable(qualifyingHeaders, qualifyingRows);
+    qualifyingList.appendChild(qualifyingTable);
 
-        qualifyingBody.appendChild(tr);
-    });
-
-    // Populate results data with a table
+    // Populate results table
     const resultsList = document.querySelector("#results");
-    resultsList.innerHTML = "";
-    resultsList.innerHTML = `
-        <h3>Race Results</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Driver</th>
-                    <th>Constructor</th>
-                    <th>Laps</th>
-                    <th>Points</th>
-                </tr>
-            </thead>
-            <tbody id="resultsTableBody"></tbody>
-        </table>
-    `;
-    const resultsBody = resultsList.querySelector("#resultsTableBody");
-    const filteredResults = resultsData.filter(r => r.race.round === race.round);
+    resultsList.innerHTML = "<h3>Race Results</h3>";
 
-    filteredResults.forEach(r => {
-        const tr = document.createElement("tr");
+    const resultsHeaders = ["Position", "Driver", "Constructor", "Laps", "Points"];
+    const resultsRows = resultsData
+        .filter(r => r.race.round === race.round)
+        .map(r => [
+            r.position,
+            `${r.driver.forename} ${r.driver.surname}`,
+            r.constructor.name,
+            r.laps,
+            r.points
+        ]);
 
-        tr.innerHTML = `
-            <td>${r.position}</td>
-            <td>${r.driver.forename} ${r.driver.surname}</td>
-            <td>${r.constructor.name}</td>
-            <td>${r.laps}</td>
-            <td>${r.points}</td>
-        `;
-
-        resultsBody.appendChild(tr);
-    });
+    const resultsTable = createTable(resultsHeaders, resultsRows);
+    resultsList.appendChild(resultsTable);
 
     // Display raceResults section
     raceResultsSection.style.display = "block";
