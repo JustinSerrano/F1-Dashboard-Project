@@ -54,7 +54,7 @@ function handleSeasonSelection(selectedSeason, homeSection, browseLoader, browse
     if (!(racesData && qualifyingData && resultsData)) {
         // Fetch and cache data if not already stored
         fetchSeasonData(selectedSeason).then((data) => {
-            cacheSeasonData(racesKey, resultsKey, qualifyingKey, data);
+            cacheSeasonData(racesKey, qualifyingKey, resultsKey, data);
             displayRaces(data[0], data[1], data[2], selectedSeason, browseLoader, browseSection);
         }).catch((error) => {
             console.error("Data fetch failed:", error);
@@ -103,17 +103,35 @@ function populateSeasons() {
 
 // Fetch season data
 function fetchSeasonData(season) {
-    const racePromise = fetch(`${API_DOMAIN}/races.php?season=${season}`).then((res) => res.json());
-    const resultsPromise = fetch(`${API_DOMAIN}/results.php?season=${season}`).then((res) => res.json());
-    const qualifyingPromise = fetch(`${API_DOMAIN}/qualifying.php?season=${season}`).then((res) => res.json());
-    return Promise.all([racePromise, resultsPromise, qualifyingPromise]);
+    const racePromise = fetch(`${API_DOMAIN}/races.php?season=${season}`)
+        .then(response => {
+            if (response.ok) {
+                return response.json
+            } else throw new Error("Error fetching race data");
+        })
+        .catch(error => console.log(error))
+    const qualifyingPromise = fetch(`${API_DOMAIN}/qualifying.php?season=${season}`)
+        .then(response => {
+            if (response.ok) {
+                return response.json
+            } else throw new Error("Error fetching qualifying data");
+        })
+        .catch(error => console.log(error))
+    const resultsPromise = fetch(`${API_DOMAIN}/results.php?season=${season}`)
+        .then(response => {
+            if (response.ok) {
+                return response.json
+            } else throw new Error("Error fetching results data");
+        })
+        .catch(error => console.log(error))
+    return Promise.all([racePromise, qualifyingPromise, resultsPromise]);
 }
 
 // Cache season data in localStorage
-function cacheSeasonData(racesKey, resultsKey, qualifyingKey, data) {
+function cacheSeasonData(racesKey, qualifyingKey, resultsKey, data) {
     localStorage.setItem(racesKey, JSON.stringify(data[0]));
-    localStorage.setItem(resultsKey, JSON.stringify(data[1]));
-    localStorage.setItem(qualifyingKey, JSON.stringify(data[2]));
+    localStorage.setItem(qualifyingKey, JSON.stringify(data[1]));
+    localStorage.setItem(resultsKey, JSON.stringify(data[2]));
 }
 
 // Display races
@@ -168,10 +186,8 @@ function populateRaceDetails(race, qualifyingData, resultsData) {
     const resultsSection = document.querySelector("#raceResults");
     document.querySelector("#raceResults h2").innerHTML = `Results for ${race.year} <button class="hyperlink-style" id="circuitLink">${race.name}</button>`;
 
-    document.querySelector("#circuitLink").addEventListener("click", () => showDialog("circuit", race.circuit));
-
-    populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"]);
-    populateTable("#results", "Race Results", resultsData, race, ["Position", "Driver", "Constructor", "Laps", "Points"]);
+    populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"], resultsData);
+    populateTable("#results", "Race Results", resultsData, race, ["Position", "Driver", "Constructor", "Laps", "Points"], resultsData);
 
     resultsSection.style.display = "flex";
 }
@@ -189,8 +205,8 @@ function populateTable(selector, title, data, race, headers) {
                 // For Qualifying Table
                 return [
                     item.position,
-                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname || ""}`, () => showDialog("driver", item.driver)),
-                    createHyperlink(item.constructor?.name, () => showDialog("constructor", item.constructor)),
+                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`),
+                    createHyperlink(item.constructor?.name),
                     item.q1 || "-",
                     item.q2 || "-",
                     item.q3 || "-",
@@ -199,8 +215,8 @@ function populateTable(selector, title, data, race, headers) {
                 // For Race Results Table
                 return [
                     item.position,
-                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname || ""}`, () => showDialog("driver", item.driver)),
-                    createHyperlink(item.constructor?.name, () => showDialog("constructor", item.constructor)),
+                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`),
+                    createHyperlink(item.constructor?.name),
                     item.laps || "-",
                     item.points || "-",
                 ];
@@ -219,131 +235,6 @@ function createHyperlink(text, action) {
     link.addEventListener("click", action);
     return link;
 }
-
-// Modal class to handle dynamic rendering
-class Modal {
-    constructor(type, data, resultsData = [], selectedSeason = null) {
-        this.type = type;
-        this.data = data;
-        this.resultsData = resultsData;
-        this.selectedSeason = selectedSeason;
-    }
-
-    async render() {
-        const dialog = document.querySelector(`#${this.type}`);
-        const detailsList = dialog.querySelector(`#${this.type}Details`);
-
-        try {
-            // Fetch specific data
-            const fetchedData = await this.fetchDetails();
-
-            let content = "";
-            if (this.type === "circuit") {
-                content = this.renderCircuit(fetchedData);
-            } else if (this.type === "driver") {
-                content = this.renderDriver(fetchedData);
-            } else if (this.type === "constructor") {
-                content = this.renderConstructor(fetchedData);
-            }
-
-            detailsList.innerHTML = content;
-            dialog.showModal();
-        } catch (error) {
-            console.error(`Error fetching ${this.type} data:`, error);
-            detailsList.innerHTML = `<li>Error loading details. Please try again later.</li>`;
-            dialog.showModal();
-        }
-    }
-
-    async fetchDetails() {
-        let endpoint;
-        switch (this.type) {
-            case "circuit":
-                endpoint = `${API_DOMAIN}/circuits.php`;
-                break;
-            case "driver":
-                endpoint = `${API_DOMAIN}/drivers.php`;
-                break;
-            case "constructor":
-                endpoint = `${API_DOMAIN}/constructors.php`;
-                break;
-            default:
-                throw new Error("Invalid type for fetching details");
-        }
-
-        const response = await fetch(endpoint);
-        if (!response.ok) throw new Error(`Failed to fetch ${this.type} details`);
-
-        const data = await response.json();
-        const matchedData = data.find(
-            (item) => item.id === this.data.id || item.name === this.data.name
-        );
-
-        if (!matchedData) throw new Error(`No matching ${this.type} found`);
-        return matchedData;
-    }
-
-    renderCircuit(circuitData) {
-        return `
-            <li><strong>Name:</strong> ${circuitData.name}</li>
-            <li><strong>Location:</strong> ${circuitData.location}, ${circuitData.country}</li>
-            <li><strong>URL:</strong> <a href="${circuitData.url}" target="_blank">${circuitData.url}</a></li>
-        `;
-    }
-
-    renderDriver(driverData) {
-        const raceResults = this.resultsData
-            .filter((r) => r.driver.forename === driverData.forename && r.driver.surname === driverData.surname)
-            .sort((a, b) => a.race.round - b.race.round)
-            .map(
-                (r) =>
-                    `<li>Round ${r.race.round}: Constructor: ${r.constructor.name}, Position: ${r.position}, Points: ${r.points}</li>`
-            );
-
-        return `
-            <li><strong>Name:</strong> ${driverData.forename} ${driverData.surname}</li>
-            <li><strong>Date of Birth:</strong> ${driverData.dob}</li>
-            <li><strong>Nationality:</strong> ${driverData.nationality}</li>
-            <li><strong>URL:</strong> <a href="${driverData.url}" target="_blank">${driverData.url}</a></li>
-            <h3>Race Results (${this.selectedSeason})</h3>
-            ${this.createScrollableList(raceResults)}
-        `;
-    }
-
-    renderConstructor(constructorData) {
-        const raceResults = this.resultsData
-            .filter((r) => r.constructor.name === constructorData.name)
-            .sort((a, b) => a.race.round - b.race.round)
-            .map(
-                (r) =>
-                    `<li>Round ${r.race.round}: Driver: ${r.driver.forename} ${r.driver.surname}, Position: ${r.position}, Points: ${r.points}</li>`
-            );
-
-        return `
-            <li><strong>Name:</strong> ${constructorData.name}</li>
-            <li><strong>Nationality:</strong> ${constructorData.nationality}</li>
-            <li><strong>URL:</strong> <a href="${constructorData.url}" target="_blank">${constructorData.url}</a></li>
-            <h3>Race Results (${this.selectedSeason})</h3>
-            ${this.createScrollableList(raceResults)}
-        `;
-    }
-
-    createScrollableList(items) {
-        return `
-            <ul style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ddd;">
-                ${items.join("")}
-            </ul>
-        `;
-    }
-}
-
-// Helper function to show a modal
-function showDialog(type, data, resultsData = [], selectedSeason = null) {
-    const modal = new Modal(type, data, resultsData, selectedSeason);
-    modal.render();
-}
-
-
 
 // Add event listeners to close buttons
 function addDialogCloseListeners() {
