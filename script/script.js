@@ -145,7 +145,7 @@ function displayRaces(racesData, qualifyingData, resultsData, season, loader, se
     const headers = ["Round", "Race Name"];
     const rows = racesData.sort((a, b) => a.round - b.round).map((race) => [
         race.round,
-        createHyperlink(race.name, () => populateRaceDetails(race, qualifyingData, resultsData))
+        createHyperlink(race.name, () => populateRaceDetails(race, qualifyingData, resultsData), "button-style")
     ]);
 
     const table = createTable(headers, rows);
@@ -235,10 +235,10 @@ function populateTable(selector, title, data, race, headers, resultsData) {
 }
 
 // Create hyperlink
-function createHyperlink(text, action) {
+function createHyperlink(text, action, customeClass= "hyperlink-style") {
     const link = document.createElement("button");
     link.textContent = text;
-    link.classList.add("hyperlink-style");
+    link.classList.add(customeClass);
     link.addEventListener("click", action);
     return link;
 }

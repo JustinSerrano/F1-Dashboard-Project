@@ -71,7 +71,8 @@ main {
     flex: 1;
 }
 
-#raceResults h2,h3 {
+#raceResults h2,
+h3 {
     margin: 0;
     padding: 10px;
     background-color: #f9f9f9;
@@ -119,22 +120,26 @@ tr:nth-child(even) {
 
 /* ========== Buttons ========== */
 
-button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 14px;
+.button-style {
+    font-size: 12px;
+    width: 100%;
+    padding: 10px;
+    height: 50px;
+    text-align: center;
+    color: #333;
+    background-color: #FFFFFF;
+    border: 1px solid #DDD;
     cursor: pointer;
-    border-radius: 3px;
-    transition: background-color 0.3s ease;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;/
 }
 
-button:hover {
-    background-color: #0056b3;
+.button-style:hover {
+    background-color: #FF1E00;
 }
 
-button.hyperlink-style {
+
+.hyperlink-style {
     background: none;
     color: #007BFF;
     border: none;
@@ -144,7 +149,7 @@ button.hyperlink-style {
     cursor: pointer;
 }
 
-button.hyperlink-style:hover {
+.hyperlink-style:hover {
     color: #0056b3;
 }
 
