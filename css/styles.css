@@ -1,26 +1,106 @@
-button {
-    background-color: #007BFF;
-    color: white;
+/* ========== General Layout ========== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+}
+
+header img {
+    display: block;
+    margin: 0 auto 10px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+/* Main container for layout */
+main {
+    background-image: url("https://images.alphacoders.com/121/thumb-1920-1215632.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    flex-grow: 1;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Reusable button styles for links */
+.race-name-button {
+    font-size: 16px;
+    width: 100%;
+    padding: 10px;
+    height: 50px;
+    text-align: center;
+    background-color: #FFFFFF;
+    border: 1px solid #DDD;
+    cursor: pointer;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;/
+}
+
+.race-name-button:hover {
+    background-color: #FF1E00;
+}
+
+.hyperlink-style {
+    background: none;
+    color: #007BFF;
     border: none;
-    padding: 10px 15px;
-    margin: 5px;
+    padding: 0;
+    font-size: inherit;
+    text-decoration: underline;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #0056b3;
+.race-name-button:hover,
+.hyperlink-style:hover {
+    color: #0056b3;
 }
+
+/* Dialog close button styling */
+.close-dialog {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.close-dialog:hover {
+    background-color: #cc0000;
+}
+
+/* ========== Table Styling ========== */
 
 table {
     width: 100%;
+    /* Ensures table spans parent width */
     border-collapse: collapse;
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 th,
 td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 5px;
     text-align: left;
 }
 
@@ -28,19 +108,26 @@ th {
     background-color: #f2f2f2;
 }
 
+/* Apply width for specific columns */
+th:first-child,
+td:first-child {
+    width: 10%;
+    /* Smaller width for position column */
+}
+
+th:last-child,
+td:last-child {
+    width: 15%;
+    /* Slightly larger width for constructors */
+}
+
 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
+/* ========== Section Visibility ========== */
 
-#home {
-    display: block;
-}
-
-#browse {
-    display: none;
-}
-
+/* Section visibility transitions */
 #home,
 #browse {
     transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -52,17 +139,105 @@ tr:nth-child(even) {
     visibility: hidden;
 }
 
-
+/* Loader visibility */
 #browseLoader {
     display: none;
 }
 
-#raceResults {
-    display: none;
+/* ========== Layout: Races and Results ========== */
+
+/* Browse section container */
+#browse {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
 }
 
-/* CSS Loader source: https://loading.io/css/ */
+/* Left column: Races */
+#races {
+    flex: 1;
+    min-width: 250px;
+    /* Ensures races column doesn't collapse */
+    max-width: 35%;
+    /* Limit to 35% of parent width */
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
 
+/* Right column: Race Results */
+#raceResults {
+    flex: 2;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f1f1f1;
+    display: flex;
+    flex-direction: column;
+    /* Inner results are stacked */
+    gap: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* ========== Inner Layout: Qualifying and Results ========== */
+
+/* Individual qualifying and results sections */
+#qualifying,
+#results {
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #ffffff;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+/* ========== Responsive Design ========== */
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+
+    /* Stack the main content vertically */
+    main {
+        flex-direction: column;
+    }
+
+    /* Enable horizontal scrolling for tables */
+    table {
+        display: block;
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    /* Adjust font size and padding */
+    th,
+    td {
+        font-size: 12px;
+        padding: 4px;
+    }
+
+    /* Stack qualifying and results vertically */
+    #raceResults {
+        flex-direction: column;
+    }
+
+    #races,
+    #raceResults {
+        max-width: 100%;
+        /* Allow full width */
+    }
+}
+
+/* ========== Loader Animation ========== */
+
+/* CSS Loader source: https://loading.io/css/ */
 .lds-ring {
     display: inline-block;
     position: relative;
