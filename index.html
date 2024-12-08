@@ -10,7 +10,7 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="script/script.js"></script>
+    <script src="script/script.js" defer></script>
 </head>
 
 <body>
@@ -35,8 +35,10 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
             <section id="races"></section>
             <section id="raceResults">
                 <h2>Results for [Selected Race]</h2>
-                <div id="qualifying"></div>
-                <div id="results"></div>
+                <div class="results-container">
+                    <div id="qualifying"></div>
+                    <div id="results"></div>
+                </div>
             </section>
         </article>
     </main>

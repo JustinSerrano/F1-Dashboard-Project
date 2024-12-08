@@ -44,7 +44,7 @@ function handleSeasonSelection(selectedSeason, homeSection, browseLoader, browse
     const qualifyingKey = `qualifying_${selectedSeason}`;
 
     homeSection.style.display = "none";
-    browseLoader.style.display = "block";
+    browseLoader.style.display = "flex";
     browseSection.style.display = "none";
 
     let racesData = localStorage.getItem(racesKey);
@@ -119,7 +119,7 @@ function cacheSeasonData(racesKey, resultsKey, qualifyingKey, data) {
 // Display races
 function displayRaces(racesData, qualifyingData, resultsData, season, loader, section) {
     loader.style.display = "none";
-    section.style.display = "block";
+    section.style.display = "flex";
 
     const races = document.querySelector("#races");
     races.innerHTML = `<h2>${season} Races</h2>`;
@@ -132,45 +132,6 @@ function displayRaces(racesData, qualifyingData, resultsData, season, loader, se
 
     const table = createTable(headers, rows);
     races.appendChild(table);
-}
-
-// Populate race details
-function populateRaceDetails(race, qualifyingData, resultsData) {
-    const resultsSection = document.querySelector("#raceResults");
-    document.querySelector("#raceResults h2").textContent = `Results for ${race.year} ${race.name}`;
-
-    // Populate qualifying table
-    const qualifyingList = document.querySelector("#qualifying");
-    qualifyingList.innerHTML = "<h3>Qualifying</h3>";
-    const qualifyingHeaders = ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"];
-    const qualifyingRows = qualifyingData
-        .filter((q) => q.race.round === race.round)
-        .map((q) => [
-            q.position,
-            createHyperlink(`${q.driver.forename} ${q.driver.surname}`, () => showDialog("driver", q.driver)),
-            createHyperlink(q.constructor.name, () => showDialog("constructor", q.constructor)),
-            q.q1 || "-",
-            q.q2 || "-",
-            q.q3 || "-"
-        ]);
-    qualifyingList.appendChild(createTable(qualifyingHeaders, qualifyingRows));
-
-    // Populate results table
-    const resultsList = document.querySelector("#results");
-    resultsList.innerHTML = "<h3>Race Results</h3>";
-    const resultsHeaders = ["Position", "Driver", "Constructor", "Laps", "Points"];
-    const resultsRows = resultsData
-        .filter((r) => r.race.round === race.round)
-        .map((r) => [
-            r.position,
-            createHyperlink(`${r.driver.forename} ${r.driver.surname}`, () => showDialog("driver", r.driver)),
-            createHyperlink(r.constructor.name, () => showDialog("constructor", r.constructor)),
-            r.laps,
-            r.points
-        ]);
-    resultsList.appendChild(createTable(resultsHeaders, resultsRows));
-
-    resultsSection.style.display = "block";
 }
 
 // Create table
@@ -201,6 +162,55 @@ function createTable(headers, rows) {
     return table;
 }
 
+
+// Populate race details
+function populateRaceDetails(race, qualifyingData, resultsData) {
+    const resultsSection = document.querySelector("#raceResults");
+    document.querySelector("#raceResults h2").innerHTML = `Results for ${race.year} <button class="hyperlink-style" id="circuitLink">${race.name}</button>`;
+
+    document.querySelector("#circuitLink").addEventListener("click", () => showDialog("circuit", race.circuit));
+
+    populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"]);
+    populateTable("#results", "Race Results", resultsData, race, ["Position", "Driver", "Constructor", "Laps", "Points"]);
+
+    resultsSection.style.display = "flex";
+}
+
+// Populate a table with data
+function populateTable(selector, title, data, race, headers) {
+    const container = document.querySelector(selector);
+    container.innerHTML = `<h3>${title}</h3>`;
+
+    // Determine rows based on header context
+    const rows = data
+        .filter((item) => item.race.round === race.round)
+        .map((item) => {
+            if (headers.includes("Q1")) {
+                // For Qualifying Table
+                return [
+                    item.position,
+                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname || ""}`, () => showDialog("driver", item.driver)),
+                    createHyperlink(item.constructor?.name, () => showDialog("constructor", item.constructor)),
+                    item.q1 || "-",
+                    item.q2 || "-",
+                    item.q3 || "-",
+                ];
+            } else {
+                // For Race Results Table
+                return [
+                    item.position,
+                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname || ""}`, () => showDialog("driver", item.driver)),
+                    createHyperlink(item.constructor?.name, () => showDialog("constructor", item.constructor)),
+                    item.laps || "-",
+                    item.points || "-",
+                ];
+            }
+        });
+
+    container.appendChild(createTable(headers, rows));
+}
+
+
 // Create hyperlink
 function createHyperlink(text, action) {
     const link = document.createElement("button");
@@ -210,27 +220,90 @@ function createHyperlink(text, action) {
     return link;
 }
 
-// Show dialog
-function showDialog(type, data) {
+// Show dialog with dynamic content based on type
+function showDialog(type, data, resultsData = [], selectedSeason = null) {
     const dialog = document.querySelector(`#${type}`);
     const detailsList = dialog.querySelector(`#${type}Details`);
-    detailsList.innerHTML = "";
+    let content = "";
 
-    if (type === "driver") {
-        detailsList.innerHTML = `
-            <li><strong>Name:</strong> ${data.forename} ${data.surname}</li>
-            <li><strong>Nationality:</strong> ${data.nationality}</li>
-            <li><strong>Date of Birth:</strong> ${data.dateOfBirth}</li>
-        `;
-    } else if (type === "constructor") {
-        detailsList.innerHTML = `
-            <li><strong>Name:</strong> ${data.name}</li>
-            <li><strong>Nationality:</strong> ${data.nationality}</li>
-        `;
+    switch (type) {
+        case "circuit":
+            content = `
+                <li><strong>Name:</strong> ${data.name}</li>
+                <li><strong>Location:</strong> ${data.location.locality}, ${data.location.country}</li>
+                <li><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></li>
+            `;
+            break;
+
+        case "constructor":
+            content = `
+                <li><strong>Name:</strong> ${data.name}</li>
+                <li><strong>Nationality:</strong> ${data.nationality}</li>
+                <li><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></li>
+                <h3>Race Results (${selectedSeason})</h3>
+                ${createScrollableList(
+                resultsData
+                    .filter((r) => r.constructor.name === data.name)
+                    .sort((a, b) => a.race.round - b.race.round)
+                    .map(
+                        (r) =>
+                            `<li>Round ${r.race.round}: ${r.driver.forename} ${r.driver.surname} - Position: ${r.position}, Points: ${r.points}</li>`
+                    )
+            )}
+            `;
+            break;
+
+        case "driver":
+            console.log(data)
+            const age = calculateAge(data.dob);
+            content = `
+                <li><strong>Name:</strong> ${data.forename} ${data.surname}</li>
+                <li><strong>Date of Birth:</strong> ${data.dateOfBirth}</li>
+                <li><strong>Age:</strong> ${age}</li>
+                <li><strong>Nationality:</strong> ${data.nationality}</li>
+                <li><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></li>
+                <h3>Race Results (${selectedSeason})</h3>
+                ${createScrollableList(
+                resultsData
+                    .filter((r) => r.driver.forename === data.forename && r.driver.surname === data.surname)
+                    .sort((a, b) => a.race.round - b.race.round)
+                    .map(
+                        (r) =>
+                            `<li>Round ${r.race.round}: Constructor: ${r.constructor.name}, Position: ${r.position}, Points: ${r.points}</li>`
+                    )
+            )}
+            `;
+            break;
+
+        default:
+            content = "<li>No details available</li>";
     }
 
+    detailsList.innerHTML = content;
     dialog.showModal();
 }
+
+// Helper function to create a scrollable list
+function createScrollableList(items) {
+    return `
+        <ul style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ddd;">
+            ${items.join("")}
+        </ul>
+    `;
+}
+
+// Helper function to calculate age
+function calculateAge(dateOfBirth) {
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 
 // Add event listeners to close buttons
 function addDialogCloseListeners() {
