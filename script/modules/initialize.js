@@ -40,7 +40,7 @@ export function initializeApp() {
         });
 
         // Add event listener for returning to home
-        document.querySelector("#f1Logo").addEventListener("click", () => {
+        document.querySelector("#homeLogo").addEventListener("click", () => {
             navigateToHome(homeSection, browseSection);
         });
 

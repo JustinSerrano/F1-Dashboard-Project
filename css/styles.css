@@ -16,7 +16,8 @@ header {
     text-align: center;
     padding: 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
     gap: 10px;
 }
@@ -55,13 +56,85 @@ main {
     border: 1px solid #444;
     border-radius: 8px;
     color: #fff;
+    display: flex;
+    /* Enable flexbox for layout */
+    justify-content: space-evenly;
+    /* Space out child elements */
+    align-items: center;
+    /* Align items at the top */
+    gap: 20px;
+    /* Add space between the elements */
+    flex-wrap: wrap;
+    /* Allow wrapping on smaller screens */
 }
 
-#home h2 {
-    margin-top: 20px;
-    font-size: 24px;
-    text-align: center;
+#home p {
+    flex: 1;
+    /* Take up remaining space */
+    font-size: 16px;
+    /* Adjust font size */
+    line-height: 1.6;
+    /* Improve readability */
+    margin: 0;
+    /* Remove default margin */
+    color: #ccc;
+    /* Slightly lighter text color for contrast */
+    max-width: 800px;
+    padding: 10px;
+}
+
+.seasons {
+    display: flex;
+    /* Enable flexbox layout */
+    flex-direction: column;
+    /* Stack children vertically */
+    align-items: center;
+    /* Center align children horizontally */
+    justify-content: center;
+    /* Center align children vertically (optional if height is fixed) */
+    gap: 10px;
+    /* Add space between elements */
+    padding: 20px;
+    /* Add padding for spacing inside the container */
+    background-color: #f9f9f9;
+    /* Optional: Add a light background color */
+    border: 1px solid #ddd;
+    /* Optional: Add a border around the div */
+    border-radius: 8px;
+    /* Optional: Add rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Optional: Add a subtle shadow */
+    max-width: 300px;
+    /* Optional: Restrict width for better centering */
+    margin: 0 auto;
+    /* Center the container within its parent */
+}
+
+.seasons h2 {
     color: #FF1E00;
+    margin: 0;
+    /* Remove default margin */
+    text-align: center;
+    /* Ensure the heading is centered */
+    font-size: 18px;
+    /* Adjust font size */
+}
+
+.seasons select {
+    padding: 10px;
+    /* Add padding inside the select box */
+    border: 1px solid #ccc;
+    /* Add border to the select box */
+    border-radius: 4px;
+    /* Rounded corners */
+    background-color: #fff;
+    /* White background for the dropdown */
+    font-size: 16px;
+    /* Adjust font size */
+    width: 100%;
+    /* Optional: Make select box fill the container's width */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Optional: Add shadow for better appearance */
 }
 
 /* ========== Browse Section ========== */
@@ -69,7 +142,7 @@ main {
 #browse {
     display: flex;
     gap: 20px;
-    width: 100%;
+    width: -webkit-fill-available;
     padding: 10px;
     box-sizing: border-box;
     display: none;
@@ -89,11 +162,69 @@ main {
     color: #FF1E00;
 }
 
+#raceInfo {
+    border: 1px solid #ccc;
+    /* Rounded corners */
+    background-color: #fff;
+    /* White background for the dropdown */
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Optional: Add a subtle shadow */
+    flex: 1;
+    /* Allow it to flex naturally within its container */
+    max-height: min-content;
+}
+
+#raceInfo h2 {
+    margin-bottom: 15px;
+    /* Space below the heading */
+    font-size: 20px;
+    /* Adjust font size for prominence */
+    color: #FF1E00;
+    /* Match the accent color used for headings */
+}
+
+#raceInfo ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#raceInfo ul li {
+    font-size: 16px;
+    /* Adjust font size for readability */
+    margin: 10px;
+    /* Space between list items */
+}
+
+#raceInfo ul li a {
+    color: #FF1E00;
+    /* Match link color with accent color */
+    text-decoration: none;
+    /* Remove underline */
+    font-weight: bold;
+    /* Bold links for emphasis */
+}
+
+#raceInfo ul li a:hover {
+    text-decoration: underline;
+    /* Add underline on hover for better usability */
+    color: #CC1A00;
+    /* Darker red for hover state */
+}
+
 #raceResults {
     flex: 2;
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+#qualifying,
+#results {
+    width: -webkit-fill-available;
 }
 
 .results-container {
@@ -115,16 +246,15 @@ h3 {
 /* ========== Table Styles ========== */
 
 table {
-    width: 100%;
     border-collapse: collapse;
     margin: 0 auto;
-    table-layout: fixed;
+    width: -webkit-fill-available;
 }
 
 th,
 td {
     border: 1px solid #DDD;
-    padding: 10px;
+    padding: 5px;
     text-align: center;
     font-size: 14px;
     color: #333;
@@ -143,7 +273,8 @@ tr {
     background-color: #FFFFFF;
 }
 
-tr:hover {
+tr:hover,
+.results tbody tr {
     background-color: #D3D3D3;
 }
 
@@ -156,42 +287,54 @@ tr:hover {
     background-color: #F1F1F1;
 }
 
-/* Alternating row colors for constructor page */
-/* .constructor tbody tr:nth-child(4n-3),
-.constructor tbody tr:nth-child(4n-2) {
-    background-color: #FFFFFF;
-}
-
-.constructor tbody tr:nth-child(4n-1),
-.constructor tbody tr:nth-child(4n) {
-    background-color: #F1F1F1;
-}
-
-.constructor tbody tr:hover,
-.results tbody tr:hover {
-    background-color: #D3D3D3;
-} */
-
 /* Placement styles for race results */
 .placement tbody tr:first-child {
-    background-color: #FFD700; /* Gold */
+    background-color: #FFD700;
+    /* Gold */
 }
 
 .placement tbody tr:nth-child(2) {
-    background-color: #C0C0C0; /* Silver */
+    background-color: #C0C0C0;
+    /* Silver */
 }
 
 .placement tbody tr:nth-child(3) {
-    background-color: #CD7F32; /* Bronze */
+    background-color: #CD7F32;
+    /* Bronze */
 }
 
-/* Ensure tables are scrollable if content overflows
-#qualifying table,
-#results table {
-    max-width: 100%;
-    border: 1px solid #DDD;
-    background-color: #FFF;
-} */
+/* Scrollable table container */
+.scrollable-table {
+    max-height: 300px;
+    /* Set the height for the scrollable table */
+    overflow-y: auto;
+}
+
+/* Altering row pair background color 
+    for driver content*/
+.driver-content tbody tr:nth-child(odd) {
+    background-color: #FFFFFF;
+}
+
+.driver-content tbody tr:nth-child(even) {
+    background-color: #F1F1F1;
+}
+
+/* Altering row pair background color 
+        for constructor content*/
+.constructor-content tbody tr:nth-child(4n-3),
+.constructor-content tbody tr:nth-child(4n-2) {
+    background-color: #FFFFFF;
+}
+
+.constructor-content tbody tr:nth-child(4n-1),
+.constructor-content tbody tr:nth-child(4n) {
+    background-color: #F1F1F1;
+}
+
+.scrollable-table tbody tr:hover {
+    background-color: #D3D3D3;
+}
 
 /* ========== Buttons and Links ========== */
 
@@ -205,6 +348,7 @@ tr:hover {
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s ease;
+    width: -webkit-fill-available;
 }
 
 .button-style:hover {
@@ -235,13 +379,13 @@ tr:hover {
 
 .qualifying .hyperlink-style:hover,
 .results .hyperlink-style:hover {
-    color: #FF1E00; 
-    text-decoration: underline; 
+    color: #FF1E00;
+    text-decoration: underline;
 }
 
 /* Keep race name hyperlink styles */
 .races .hyperlink-style {
-    color: #FF1E00; 
+    color: #FF1E00;
     text-decoration: underline;
 }
 
@@ -293,17 +437,12 @@ dialog {
     padding: 15px;
 }
 
-/* Scrollable table container */
-.scrollable-table {
-    max-height: 300px; /* Set the height for the scrollable table */
-    overflow-y: auto;
-}
-
 /* Add fade-in animation for smooth appearance */
 @keyframes fadeIn {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -348,6 +487,7 @@ dialog::backdrop {
     from {
         background: rgba(0, 0, 0, 0);
     }
+
     to {
         background: rgba(0, 0, 0, 0.5);
     }

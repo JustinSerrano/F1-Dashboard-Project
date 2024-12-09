@@ -54,7 +54,7 @@ export function attachSeasonDropdownHandler(callback) {
  * @param {Function} callback - Function to handle logo click event.
  */
 export function attachLogoClickHandler(callback) {
-    const logo = document.querySelector("#f1Logo");
+    const logo = document.querySelector("#homeLogo");
     logo?.addEventListener("click", callback);
 }
 

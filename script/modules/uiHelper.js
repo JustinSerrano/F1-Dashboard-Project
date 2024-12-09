@@ -99,18 +99,31 @@ export function displayRaces(racesData, qualifyingData, resultsData, season, loa
 
 /** Populate race details in the UI */
 export function populateRaceDetails(race, qualifyingData, resultsData) {
-    const resultsSection = document.querySelector("#raceResults");
+    const raceInfo = document.querySelector("#raceInfo");
 
-    // Update race results header dynamically
-    document.querySelector("#raceResults h2").innerHTML = `
-        Results for ${race.year} 
-        <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
-            ${race.name}
-        </button>
+    // Clear existing content
+    raceInfo.innerHTML = ""
+
+    // Create and append the <h2> element
+    const h2 = document.createElement("h2");
+    h2.textContent = `Results for ${race.year} ${race.name}`;
+    raceInfo.appendChild(h2);
+
+    // Populate race info
+    const ul = document.createElement("ul");
+    ul.innerHTML = `
+        <li><strong>Race Name:</strong> ${race.name}</li>
+        <li><strong>Rnd#:</strong> ${race.round}</li>
+        <li><strong>Year:</strong> ${race.year}</li>
+        <li><strong>Circuit Name:</strong> <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
+            ${race.circuit.name}</button></li>
+        <li><strong>Date:</strong> ${race.date}</li>
+        <li><strong>URL:</strong> <a href="${race.circuit.url}" target="_blank">${race.circuit.url}</a></li>
     `;
+    raceInfo.appendChild(ul);
 
     // Attach a single event listener for all circuit links (delegation)
-    document.querySelector("#raceResults").addEventListener("click", (event) => {
+    raceInfo.addEventListener("click", (event) => {
         const target = event.target;
 
         // Ensure the click event is on a circuit link
@@ -125,7 +138,7 @@ export function populateRaceDetails(race, qualifyingData, resultsData) {
     populateTable("#results", "Race Results", resultsData, race, ["Pos#", "Driver", "Constructor", "Laps", "Pts"], resultsData);
 
     // Show the results section
-    resultsSection.style.display = "flex";
+    document.querySelector("#raceResults").style.display = "flex";
 }
 
 /** Populate a table dynamically based on data and headers */
