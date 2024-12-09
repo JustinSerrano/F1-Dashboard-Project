@@ -1,3 +1,5 @@
+/* styles/styles.css*/
+
 /* ========== General Styles ========== */
 
 body {
@@ -43,7 +45,6 @@ main {
     border: 1px solid #ddd;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    max-width: 1200px;
     border-radius: 8px;
 }
 
@@ -63,8 +64,8 @@ main {
     color: #FF1E00;
 }
 
+/* ========== Browse Section ========== */
 
-/* Browse Section */
 #browse {
     display: flex;
     gap: 20px;
@@ -120,7 +121,6 @@ table {
     table-layout: fixed;
 }
 
-/* General cell styling */
 th,
 td {
     border: 1px solid #DDD;
@@ -130,14 +130,12 @@ td {
     color: #333;
 }
 
-/* Header styling */
 th {
     background-color: #333;
     color: #FFFFFF;
     font-weight: bold;
 }
 
-/* General row background color */
 tr {
     background-color: #FFFFFF;
 }
@@ -146,7 +144,7 @@ tr:hover {
     background-color: #D3D3D3;
 }
 
-/* Alternating row colors for driver page */
+/* Alternating row colors for tables */
 .results tbody tr:nth-child(odd) {
     background-color: #FFFFFF;
 }
@@ -171,32 +169,28 @@ tr:hover {
     background-color: #D3D3D3;
 } */
 
-/* Styling for results placement */
-/* 1st place - Gold */
+/* Placement styles for race results */
 .placement tbody tr:first-child {
-    background-color: #FFD700;
+    background-color: #FFD700; /* Gold */
 }
 
-/* 2nd place - Silver */
 .placement tbody tr:nth-child(2) {
-    background-color: #C0C0C0;
+    background-color: #C0C0C0; /* Silver */
 }
 
-/* 3rd place - Bronze */
 .placement tbody tr:nth-child(3) {
-    background-color: #CD7F32;
+    background-color: #CD7F32; /* Bronze */
 }
 
-/* Ensure tables are scrollable if content overflows */
+/* Ensure tables are scrollable if content overflows
 #qualifying table,
 #results table {
     max-width: 100%;
     border: 1px solid #DDD;
     background-color: #FFF;
-}
+} */
 
-
-/* ========== Buttons ========== */
+/* ========== Buttons and Links ========== */
 
 .button-style {
     font-size: 14px;
@@ -214,7 +208,6 @@ tr:hover {
     background-color: #CC1A00;
 }
 
-
 .hyperlink-style {
     background: none;
     color: #FF1E00;
@@ -228,6 +221,31 @@ tr:hover {
 .hyperlink-style:hover {
     color: #CC1A00;
 }
+
+/* Qualifying and Race Results hyperlinks */
+.qualifying .hyperlink-style,
+.results .hyperlink-style {
+    color: #333;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.qualifying .hyperlink-style:hover,
+.results .hyperlink-style:hover {
+    color: #FF1E00; 
+    text-decoration: underline; 
+}
+
+/* Keep race name hyperlink styles */
+.races .hyperlink-style {
+    color: #FF1E00; 
+    text-decoration: underline;
+}
+
+.races .hyperlink-style:hover {
+    color: #CC1A00;
+}
+
 
 /* Close button for dialogs */
 .close-dialog {
@@ -295,10 +313,10 @@ footer a:hover {
     width: 64px;
     height: 64px;
     margin: 8px;
-    border: 8px solid #007BFF;
+    border: 8px solid #FF1E00;
     border-radius: 50%;
     animation: lds-ring 1.2s linear infinite;
-    border-color: #007BFF transparent transparent transparent;
+    border-color: #FF1E00 transparent transparent transparent;
 }
 
 .lds-ring div:nth-child(1) {
