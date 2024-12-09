@@ -67,18 +67,9 @@ main {
     border-radius: 8px;
     color: #fff;
     display: flex;
+    flex-direction: column;
     gap: 20px;
     animation: fadeIn 0.5s ease-in-out;
-}
-
-#home p {
-    flex: 1;
-    font-size: 16px;
-    line-height: 1.6;
-    margin: 0;
-    color: #ccc;
-    max-width: 800px;
-    padding: 10px;
 }
 
 .seasons {
@@ -86,7 +77,6 @@ main {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    padding: 20px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -95,28 +85,35 @@ main {
     margin: 0 auto;
 }
 
-.seasons h2 {
+.seasons h2,
+.project-info h2 {
     color: #FF1E00;
+    padding: 10px;
     margin: 0;
     text-align: center;
-    font-size: 3em;
+    font-size: 2em;
 }
 
 .seasons select {
     padding: 10px;
+    margin: 25px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #fff;
     font-size: 2em;
-    width: 100%;
+    width: 75%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .project-info {
-    width: 100%;
     font-size: 1.25em;
-    margin: 20px;
+    margin: 0px 100px 0px 100px;
     line-height: 1.75;
+}
+
+.project-info ul,
+p {
+    margin: 20px 100px 20px 100px;
 }
 
 /* ========== Browse Section ========== */
