@@ -11,10 +11,12 @@ function initializeApp() {
     const browseLoader = document.querySelector("#browseLoader");
     const browseSection = document.querySelector("#browse");
     const homeSection = document.querySelector("#home");
+    const resultsSection = document.querySelector("#raceResults");
 
     // Hide initial sections
     browseLoader.style.display = "none";
     browseSection.style.display = "none";
+    resultsSection.style.display = "none";
 
     // Populate season dropdown
     populateSeasons();
@@ -26,7 +28,7 @@ function initializeApp() {
     });
 
     // Event listener for returning to home
-    document.querySelector("#mruLogo").addEventListener("click", () => {
+    document.querySelector("#f1Logo").addEventListener("click", () => {
         navigateToHome(homeSection, browseSection);
     });
 

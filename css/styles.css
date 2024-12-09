@@ -9,20 +9,27 @@ body {
 }
 
 header {
-    background-color: #333;
+    background-color: #000;
     color: #fff;
     text-align: center;
-    padding: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 header img {
-    display: block;
-    margin: 0 auto 10px;
+    width: 150px;
+    height: auto;
 }
 
 header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 3px;
     margin: 0;
-    font-size: 24px;
+    color: #FF1E00;
 }
 
 /* ========== Main Layout ========== */
@@ -31,8 +38,31 @@ main {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 15px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 8px;
 }
+
+/* Home Section */
+#home {
+    padding: 20px;
+    background-color: #111;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #fff;
+}
+
+#home h2 {
+    margin-top: 20px;
+    font-size: 24px;
+    text-align: center;
+    color: #FF1E00;
+}
+
 
 /* Browse Section */
 #browse {
@@ -42,20 +72,20 @@ main {
     padding: 10px;
     box-sizing: border-box;
     display: none;
-    /* Hidden initially */
 }
 
 #races {
     flex: 1;
-    border: 1px solid #ddd;
+    border: 1px solid #444;
     padding: 10px;
-    background-color: #f9f9f9;
+    background-color: #111;
     overflow-y: auto;
     max-width: 300px;
 }
 
 #races h2 {
     text-align: center;
+    color: #FF1E00;
 }
 
 #raceResults {
@@ -75,9 +105,10 @@ main {
 h3 {
     margin: 0;
     padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: #111;
+    border: 1px solid #444;
     text-align: center;
+    color: #FF1E00;
 }
 
 /* ========== Table Styles ========== */
@@ -85,63 +116,108 @@ h3 {
 table {
     width: 100%;
     border-collapse: collapse;
+    margin: 0 auto;
     table-layout: fixed;
 }
 
+/* General cell styling */
 th,
 td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    word-wrap: break-word;
-}
-
-th {
-    background-color: #f2f2f2;
+    border: 1px solid #DDD;
+    padding: 10px;
     text-align: center;
+    font-size: 14px;
+    color: #333;
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
+/* Header styling */
+th {
+    background-color: #333;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+/* General row background color */
+tr {
+    background-color: #FFFFFF;
+}
+
+tr:hover {
+    background-color: #D3D3D3;
+}
+
+/* Alternating row colors for driver page */
+.driver tbody tr:nth-child(odd) {
+    background-color: #FFFFFF;
+}
+
+.driver tbody tr:nth-child(even) {
+    background-color: #F1F1F1;
+}
+
+/* Alternating row colors for constructor page */
+.constructor tbody tr:nth-child(4n-3),
+.constructor tbody tr:nth-child(4n-2) {
+    background-color: #FFFFFF;
+}
+
+.constructor tbody tr:nth-child(4n-1),
+.constructor tbody tr:nth-child(4n) {
+    background-color: #F1F1F1;
+}
+
+.constructor tbody tr:hover,
+.driver tbody tr:hover {
+    background-color: #D3D3D3;
+}
+
+/* Styling for results placement */
+/* 1st place - Gold */
+.placement table tr:first-child {
+    background-color: #FFD700;
+}
+
+/* 2nd place - Silver */
+.placement table tr:nth-child(2) {
+    background-color: #C0C0C0;
+}
+
+/* 3rd place - Bronze */
+.placement table tr:nth-child(3) {
+    background-color: #CD7F32;
 }
 
 /* Ensure tables are scrollable if content overflows */
-#races table,
 #qualifying table,
 #results table {
     max-width: 100%;
+    border: 1px solid #DDD;
+    background-color: #FFF;
 }
 
-#qualifying,
-#results {
-    flex: 1;
-    overflow-x: auto;
-}
 
 /* ========== Buttons ========== */
 
 .button-style {
-    font-size: 12px;
-    width: 100%;
-    padding: 10px;
-    height: 50px;
+    font-size: 14px;
+    padding: 10px 20px;
     text-align: center;
-    color: #333;
-    background-color: #FFFFFF;
-    border: 1px solid #DDD;
+    color: #fff;
+    background-color: #FF1E00;
+    border: 1px solid #FF1E00;
     cursor: pointer;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;/
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
 .button-style:hover {
-    background-color: #FF1E00;
+    background-color: #CC1A00;
 }
 
 
 .hyperlink-style {
     background: none;
-    color: #007BFF;
+    color: #FF1E00;
     border: none;
     padding: 0;
     text-decoration: underline;
@@ -150,7 +226,7 @@ tr:nth-child(even) {
 }
 
 .hyperlink-style:hover {
-    color: #0056b3;
+    color: #CC1A00;
 }
 
 /* Close button for dialogs */
@@ -167,6 +243,41 @@ tr:nth-child(even) {
 .close-dialog:hover {
     background-color: #cc0000;
 }
+
+/* ========== Footer ========== */
+
+footer {
+    background-color: #111;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+}
+
+.footer-info p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: #FF1E00;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
 
 /* ========== Loader source: https://loading.io/css/ ========== */
 
