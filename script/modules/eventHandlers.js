@@ -1,4 +1,7 @@
-// modules/eventHandlers.js
+/* modules/eventHandlers.js 
+
+This project has been developed with guidance and assistance from ChatGPT, a conversational AI by OpenAI.
+*/
 
 /**
  * Adds event listeners to close dialog modals when the close button is clicked.

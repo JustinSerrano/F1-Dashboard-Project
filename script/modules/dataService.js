@@ -1,4 +1,8 @@
-// modules/dataService.js
+/* modules/dataService.js 
+
+This project has been developed with guidance and assistance from ChatGPT, a conversational AI by OpenAI.
+*/
+
 import { displayRaces } from './uiHelper.js';
 
 const API_DOMAIN = "https://www.randyconnolly.com/funwebdev/3rd/api/f1";

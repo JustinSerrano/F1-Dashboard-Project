@@ -1,4 +1,8 @@
-// modules/initialize.js
+/* modules/initialize.js 
+
+This project has been developed with guidance and assistance from ChatGPT, a conversational AI by OpenAI.
+*/
+
 import { populateSeasons, navigateToHome } from './uiHelper.js';
 import { addDialogCloseListeners, addOutsideClickListeners } from './eventHandlers.js';
 

@@ -1,4 +1,7 @@
-// modules/uiHelper.js
+/* modules/uiHelper.js 
+
+This project has been developed with guidance and assistance from ChatGPT, a conversational AI by OpenAI.
+*/
 
 import { fetchDrivers, fetchConstructors } from "./dataService.js";
 
