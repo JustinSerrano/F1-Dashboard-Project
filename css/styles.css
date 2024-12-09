@@ -134,6 +134,9 @@ th {
     background-color: #333;
     color: #FFFFFF;
     font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 tr {
@@ -263,15 +266,17 @@ dialog {
     animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Driver details and race results layout */
-.driver-content {
+/* Driver and Constructor details and race results layout */
+.driver-content,
+.constructor-content {
     display: flex;
     flex-direction: row;
     gap: 20px;
 }
 
-/* Driver details section */
-.driver-info {
+/* Driver and Constructor details section */
+.driver-info,
+.constructor-info {
     flex: 1;
     background-color: #f9f9f9;
     border: 1px solid #ddd;

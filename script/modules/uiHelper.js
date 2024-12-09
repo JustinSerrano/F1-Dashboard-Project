@@ -183,7 +183,7 @@ export function populateTable(selector, title, data, race, headers, resultsData)
  */
 export function showCircuitDetails(circuit) {
     const dialog = document.querySelector("#circuit");
-    const contentContainer = document.querySelector("#circuitContent");
+    const contentContainer = document.querySelector("#circuitDetails");
 
     try {
         // Generate dynamic content
@@ -257,10 +257,10 @@ export async function showDriverDetails(driverRef, year, resultsData) {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Round</th>
+                                    <th>Rnd#</th>
                                     <th>Race Name</th>
-                                    <th>Position</th>
-                                    <th>Points</th>
+                                    <th>Pos#</th>
+                                    <th>Pts</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -302,26 +302,62 @@ export async function showConstructorDetails(constructorName, year, resultsData)
         );
         if (!constructorResults.length) throw new Error("No race results available for this constructor in the selected year");
 
-        // Format race results
+        console.log(constructorResults);
+        // Format race results into table rows
         const raceResults = constructorResults.map(
-            (result) =>
-                `<li>Round ${result.race.round}: ${result.race.name}, Driver: ${result.driver.forename} ${result.driver.surname}, Position: ${result.position}, Points: ${result.points || 0}</li>`
-        );
+            (race) => `
+                <tr>
+                    <td>${race.race.round}</td>
+                    <td>${race.race.name}</td>
+                    <td>${race.driver.forename} ${race.driver.surname}</td>
+                    <td>${race.position}</td>
+                    <td>${race.points || 0}</td>
+                </tr>
+            `
+        ).join("");
 
         // Render Constructor Details
+        // Populate constructor-info section
         constructorDetails.innerHTML = `
-            <li><strong>Name:</strong> ${constructorInfo.name}</li>
-            <li><strong>Nationality:</strong> ${constructorInfo.nationality || "N/A"}</li>
-            <li><strong>URL:</strong> <a href="${constructorInfo.url || "#"}" target="_blank">${constructorInfo.url || "N/A"}</a></li>
-            <h3>Race Results</h3>
-            <ul class="scrollable-list">${raceResults.join("")}</ul>
+            <div class="constructor-content">
+                <div class="constructor-info">
+                    <h2>Constructor Details</h2>
+                    <img src="https://placehold.co/150x100" alt="Driver image placeholder">
+                    <ul>
+                        <li><strong>Name:</strong> ${constructorInfo.name}</li>
+                        <li><strong>Nationality:</strong> ${constructorInfo.nationality || "N/A"}</li>
+                        <li><strong>URL:</strong> <a href="${constructorInfo.url || "#"}" target="_blank">${constructorInfo.url || "N/A"}</a></li>
+                    </ul>
+                </div>
+                <div class="race-results">
+                    <h3>Race Results</h3>
+                    <div class="scrollable-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rnd#</th>
+                                    <th>Race Name</th>
+                                    <th>Driver</th>
+                                    <th>Pos#</th>
+                                    <th>Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${raceResults}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         `;
 
         // Show modal
+        constructorDialog.style.display = "flex";
         constructorDialog.showModal();
     } catch (error) {
         console.error("Error fetching constructor details:", error);
         constructorDetails.innerHTML = `<li>Error loading constructor details. Please try again later.</li>`;
+        constructorDialog.style.display = "flex";
         constructorDialog.showModal();
     }
 }
