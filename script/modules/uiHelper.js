@@ -100,15 +100,31 @@ export function displayRaces(racesData, qualifyingData, resultsData, season, loa
 /** Populate race details in the UI */
 export function populateRaceDetails(race, qualifyingData, resultsData) {
     const resultsSection = document.querySelector("#raceResults");
-    document.querySelector("#raceResults h2").innerHTML = `Results for ${race.year} <button class="hyperlink-style" id="circuitLink">${race.name}</button>`;
 
-    document.querySelector("#circuitLink").addEventListener("click", () => {
-        showCircuitDetails(race.circuit);
+    // Update race results header dynamically
+    document.querySelector("#raceResults h2").innerHTML = `
+        Results for ${race.year} 
+        <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
+            ${race.name}
+        </button>
+    `;
+
+    // Attach a single event listener for all circuit links (delegation)
+    document.querySelector("#raceResults").addEventListener("click", (event) => {
+        const target = event.target;
+
+        // Ensure the click event is on a circuit link
+        if (target.matches(".hyperlink-style") && target.id === "circuitLink") {
+            const circuitData = target.dataset.circuit; // Retrieve circuit data from attribute
+            showCircuitDetails(JSON.parse(circuitData)); // Display details
+        }
     });
 
+    // Populate qualifying and results tables
     populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Pos#", "Driver", "Constructor", "Q1", "Q2", "Q3"], resultsData);
     populateTable("#results", "Race Results", resultsData, race, ["Pos#", "Driver", "Constructor", "Laps", "Pts"], resultsData);
 
+    // Show the results section
     resultsSection.style.display = "flex";
 }
 
@@ -161,22 +177,32 @@ export function populateTable(selector, title, data, race, headers, resultsData)
 
 /* ========== Modal-Specific Logic ========== */
 
-/** Show circuit details in a modal */
+/**
+ * Show circuit details in a modal.
+ * @param {Object} circuit - Circuit data object containing details to display.
+ */
 export function showCircuitDetails(circuit) {
     const dialog = document.querySelector("#circuit");
-    const detailsList = document.querySelector("#circuitDetails");
+    const contentContainer = document.querySelector("#circuitContent");
 
     try {
-        detailsList.innerHTML = `
-            <li><strong>Name:</strong> ${circuit.name}</li>
-            <li><strong>Location:</strong> ${circuit.location}, ${circuit.country}</li>
-            <li><strong>URL:</strong> <a href="${circuit.url}" target="_blank">${circuit.url}</a></li>
+        // Generate dynamic content
+        contentContainer.innerHTML = `
+            <h2>Circuit Details</h2>
+            <img src="https://placehold.co/150x100" alt="Circuit image placeholder">
+            <ul>
+                <li><strong>Name:</strong> ${circuit.name}</li>
+                <li><strong>Location:</strong> ${circuit.location}, ${circuit.country}</li>
+                <li><strong>URL:</strong> <a href="${circuit.url}" target="_blank">${circuit.url}</a></li>
+            </ul>
         `;
 
+        // Show modal
+        dialog.style.display = "flex"; // Make it visible if not already set
         dialog.showModal();
     } catch (error) {
         console.error("Error displaying circuit details:", error);
-        detailsList.innerHTML = `<li>Error loading circuit details. Please try again later.</li>`;
+        contentContainer.innerHTML = `<p>Error loading circuit details. Please try again later.</p>`;
         dialog.showModal();
     }
 }
@@ -200,27 +226,59 @@ export async function showDriverDetails(driverRef, year, resultsData) {
         );
         if (!driverResults.length) throw new Error("No race results available for this driver in the selected year");
 
-        // Format race results
+        // Format race results into table rows
         const raceResults = driverResults.map(
-            (race) =>
-                `<li>Round ${race.race.round}: ${race.race.name}, Position: ${race.position}, Points: ${race.points || 0}</li>`
-        );
+            (race) => `
+                <tr>
+                    <td>${race.race.round}</td>
+                    <td>${race.race.name}</td>
+                    <td>${race.position}</td>
+                    <td>${race.points || 0}</td>
+                </tr>
+            `
+        ).join("");
 
-        // Render Driver Details
+        // Populate driver-info section
         driverDetails.innerHTML = `
-            <li><strong>Name:</strong> ${driverInfo.forename} ${driverInfo.surname}</li>
-            <li><strong>Date of Birth:</strong> ${driverInfo.dob || "N/A"}</li>
-            <li><strong>Nationality:</strong> ${driverInfo.nationality || "N/A"}</li>
-            <li><strong>URL:</strong> <a href="${driverInfo.url || "#"}" target="_blank">${driverInfo.url || "N/A"}</a></li>
-            <h3>Race Results</h3>
-            <ul class="scrollable-list">${raceResults.join("")}</ul>
+            <div class="driver-content">
+                <div class="driver-info">
+                    <h2>Driver Details</h2>
+                    <img src="https://placehold.co/150x100" alt="Driver image placeholder">
+                    <ul>
+                        <li><strong>Name:</strong> ${driverInfo.forename} ${driverInfo.surname}</li>
+                        <li><strong>Date of Birth:</strong> ${driverInfo.dob || "N/A"}</li>
+                        <li><strong>Nationality:</strong> ${driverInfo.nationality || "N/A"}</li>
+                        <li><strong>URL:</strong> <a href="${driverInfo.url || "#"}" target="_blank">${driverInfo.url || "N/A"}</a></li>
+                    </ul>
+                </div>
+                <div class="race-results">
+                    <h3>Race Results</h3>
+                    <div class="scrollable-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Round</th>
+                                    <th>Race Name</th>
+                                    <th>Position</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${raceResults}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         `;
 
         // Show modal
+        driverDialog.style.display = "flex";
         driverDialog.showModal();
     } catch (error) {
         console.error("Error fetching driver details:", error);
         driverDetails.innerHTML = `<li>Error loading driver details. Please try again later.</li>`;
+        driverDialog.style.display = "flex";
         driverDialog.showModal();
     }
 }

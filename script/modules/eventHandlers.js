@@ -11,8 +11,12 @@ export function addDialogCloseListeners() {
     ];
 
     dialogCloseMappings.forEach(({ button, dialog }) => {
-        document.querySelector(button)?.addEventListener("click", () => {
-            document.querySelector(dialog)?.close();
+        const closeButton = document.querySelector(button);
+        const dialogElement = document.querySelector(dialog);
+
+        closeButton?.addEventListener("click", () => {
+            dialogElement?.close();
+            dialogElement.style.display = "none"; // Hide the dialog by setting display to none
         });
     });
 }
@@ -25,7 +29,10 @@ export function addOutsideClickListeners() {
     dialogIds.forEach((dialogId) => {
         const dialog = document.querySelector(`#${dialogId}`);
         dialog?.addEventListener("click", (e) => {
-            if (e.target === dialog) dialog.close();
+            if (e.target === dialog) {
+                dialog.close();
+                dialog.style.display = "none"; // Hide the dialog
+            }
         });
     });
 }
