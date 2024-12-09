@@ -242,6 +242,12 @@ tr:hover {
     background-color: #D3D3D3;
 }
 
+.sorted-column {
+    background-color: #FF1E00;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .results tbody tr:nth-child(odd) {
     background-color: #FFF;
 }

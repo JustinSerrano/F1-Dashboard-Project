@@ -35,6 +35,39 @@ export function navigateToHome(homeSection, browseSection) {
     document.querySelector("#seasonList").value = "";
 }
 
+/** Sort table rows by the specified column */
+export function sortTable(table, columnIndex, type) {
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // Determine the sorting direction
+    const isAscending = table.getAttribute("data-sort-order") !== "asc";
+    table.setAttribute("data-sort-order", isAscending ? "asc" : "desc");
+
+    // Sort rows based on the column and data type
+    rows.sort((a, b) => {
+        const cellA = a.children[columnIndex].textContent.trim();
+        const cellB = b.children[columnIndex].textContent.trim();
+
+        if (type === "number") {
+            return isAscending ? cellA - cellB : cellB - cellA;
+        } else if (type === "string") {
+            return isAscending
+                ? cellA.localeCompare(cellB)
+                : cellB.localeCompare(cellA);
+        }
+    });
+
+    // Append sorted rows back to the table body
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+/** Highlight the currently sorted column */
+function highlightSortedColumn(headerRow, activeTh) {
+    Array.from(headerRow.children).forEach(th => th.classList.remove("sorted-column"));
+    activeTh.classList.add("sorted-column");
+}
+
 /* ========== Table and Reusable Components ========== */
 
 /** Create a table dynamically based on provided headers and rows */
@@ -43,9 +76,23 @@ export function createTable(headers, rows) {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
-    headers.forEach((header) => {
+    headers.forEach((header, index) => {
         const th = document.createElement("th");
-        th.textContent = header;
+        if (typeof header === "object") {
+            // Allow header object with label and type
+            th.textContent = header.label;
+            th.dataset.sort = header.type;
+        } else {
+            // Default to string sorting if not specified
+            th.textContent = header;
+            th.dataset.sort = "string";
+        }
+
+        // Add sorting capability
+        th.addEventListener("click", () => {
+            sortTable(table, index, th.dataset.sort);
+            highlightSortedColumn(headerRow, th);
+        });
         headerRow.appendChild(th);
     });
 
