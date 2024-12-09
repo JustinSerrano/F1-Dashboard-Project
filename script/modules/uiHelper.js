@@ -266,7 +266,7 @@ export async function showDriverDetails(driverRef, year, resultsData) {
                 </div>
                 <div class="race-results">
                     <h3>Race Results</h3>
-                    <div class="scrollable-table">
+                    <div class="modal-table">
                         <table>
                             <thead>
                                 <tr>
@@ -344,7 +344,7 @@ export async function showConstructorDetails(constructorName, year, resultsData)
                 </div>
                 <div class="race-results">
                     <h3>Race Results</h3>
-                    <div class="scrollable-table">
+                    <div class="modal-table">
                         <table>
                             <thead>
                                 <tr>

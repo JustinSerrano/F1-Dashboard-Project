@@ -25,6 +25,12 @@ header {
 header img {
     width: 150px;
     height: auto;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+header img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px 5px #FF1E00;
 }
 
 header h1 {
@@ -49,7 +55,8 @@ main {
     border-radius: 8px;
 }
 
-/* Home Section */
+/* ========== Home Section ========== */
+
 #home {
     padding: 20px;
     background-color: #111;
@@ -57,95 +64,66 @@ main {
     border-radius: 8px;
     color: #fff;
     display: flex;
-    /* Enable flexbox for layout */
     justify-content: space-evenly;
-    /* Space out child elements */
     align-items: center;
-    /* Align items at the top */
     gap: 20px;
-    /* Add space between the elements */
     flex-wrap: wrap;
-    /* Allow wrapping on smaller screens */
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 #home p {
     flex: 1;
-    /* Take up remaining space */
     font-size: 16px;
-    /* Adjust font size */
     line-height: 1.6;
-    /* Improve readability */
     margin: 0;
-    /* Remove default margin */
     color: #ccc;
-    /* Slightly lighter text color for contrast */
     max-width: 800px;
     padding: 10px;
 }
 
 .seasons {
     display: flex;
-    /* Enable flexbox layout */
     flex-direction: column;
-    /* Stack children vertically */
     align-items: center;
-    /* Center align children horizontally */
     justify-content: center;
-    /* Center align children vertically (optional if height is fixed) */
     gap: 10px;
-    /* Add space between elements */
     padding: 20px;
-    /* Add padding for spacing inside the container */
     background-color: #f9f9f9;
-    /* Optional: Add a light background color */
     border: 1px solid #ddd;
-    /* Optional: Add a border around the div */
     border-radius: 8px;
-    /* Optional: Add rounded corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /* Optional: Add a subtle shadow */
     max-width: 300px;
-    /* Optional: Restrict width for better centering */
     margin: 0 auto;
-    /* Center the container within its parent */
 }
 
 .seasons h2 {
     color: #FF1E00;
     margin: 0;
-    /* Remove default margin */
     text-align: center;
-    /* Ensure the heading is centered */
     font-size: 18px;
-    /* Adjust font size */
 }
 
 .seasons select {
     padding: 10px;
-    /* Add padding inside the select box */
     border: 1px solid #ccc;
-    /* Add border to the select box */
     border-radius: 4px;
-    /* Rounded corners */
     background-color: #fff;
-    /* White background for the dropdown */
     font-size: 16px;
-    /* Adjust font size */
     width: 100%;
-    /* Optional: Make select box fill the container's width */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* Optional: Add shadow for better appearance */
 }
 
 /* ========== Browse Section ========== */
 
 #browse {
-    display: flex;
-    gap: 20px;
-    width: -webkit-fill-available;
-    padding: 10px;
-    box-sizing: border-box;
     display: none;
+    flex: 1;
+    gap: 20px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    transform-origin: bottom;
+    animation: slideUp 0.5s ease-out;
 }
 
 #races {
@@ -164,55 +142,40 @@ main {
 
 #raceInfo {
     border: 1px solid #ccc;
-    /* Rounded corners */
     background-color: #fff;
-    /* White background for the dropdown */
     font-size: 16px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /* Optional: Add a subtle shadow */
     flex: 1;
-    /* Allow it to flex naturally within its container */
     max-height: min-content;
 }
 
 #raceInfo h2 {
     margin-bottom: 15px;
-    /* Space below the heading */
     font-size: 20px;
-    /* Adjust font size for prominence */
     color: #FF1E00;
-    /* Match the accent color used for headings */
 }
 
 #raceInfo ul {
     list-style: none;
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 #raceInfo ul li {
     font-size: 16px;
-    /* Adjust font size for readability */
     margin: 10px;
-    /* Space between list items */
 }
 
 #raceInfo ul li a {
     color: #FF1E00;
-    /* Match link color with accent color */
     text-decoration: none;
-    /* Remove underline */
     font-weight: bold;
-    /* Bold links for emphasis */
 }
 
 #raceInfo ul li a:hover {
     text-decoration: underline;
-    /* Add underline on hover for better usability */
     color: #CC1A00;
-    /* Darker red for hover state */
 }
 
 #raceResults {
@@ -220,17 +183,19 @@ main {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-#qualifying,
-#results {
-    width: -webkit-fill-available;
+    transform-origin: bottom;
+    animation: slideUp 0.5s ease-out;
 }
 
 .results-container {
     display: flex;
-    gap: 10px;
     flex: 1;
+    gap: 10px;
+}
+
+#qualifying,
+#results {
+    width: 100%;
 }
 
 #raceResults h2,
@@ -247,8 +212,8 @@ h3 {
 
 table {
     border-collapse: collapse;
+    width: 100%;
     margin: 0 auto;
-    width: -webkit-fill-available;
 }
 
 th,
@@ -270,17 +235,15 @@ th {
 }
 
 tr {
-    background-color: #FFFFFF;
+    background-color: #FFF;
 }
 
-tr:hover,
-.results tbody tr {
+tr:hover {
     background-color: #D3D3D3;
 }
 
-/* Alternating row colors for tables */
 .results tbody tr:nth-child(odd) {
-    background-color: #FFFFFF;
+    background-color: #FFF;
 }
 
 .results tbody tr:nth-child(even) {
@@ -290,23 +253,19 @@ tr:hover,
 /* Placement styles for race results */
 .placement tbody tr:first-child {
     background-color: #FFD700;
-    /* Gold */
 }
 
 .placement tbody tr:nth-child(2) {
     background-color: #C0C0C0;
-    /* Silver */
 }
 
 .placement tbody tr:nth-child(3) {
     background-color: #CD7F32;
-    /* Bronze */
 }
 
 /* Scrollable table container */
-.scrollable-table {
+.modal-table {
     max-height: 300px;
-    /* Set the height for the scrollable table */
     overflow-y: auto;
 }
 
@@ -332,7 +291,9 @@ tr:hover,
     background-color: #F1F1F1;
 }
 
-.scrollable-table tbody tr:hover {
+#qualifyingTable tbody tr:hover,
+#resultsTable tbody tr:hover,
+.modal-table tbody tr:hover {
     background-color: #D3D3D3;
 }
 
@@ -348,7 +309,7 @@ tr:hover,
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-    width: -webkit-fill-available;
+    width: 100%;
 }
 
 .button-style:hover {
@@ -396,7 +357,6 @@ tr:hover,
 
 /* ========== Modal Styles ========== */
 
-/* Basic modal styles */
 dialog {
     border: none;
     border-radius: 8px;
@@ -437,17 +397,6 @@ dialog {
     padding: 15px;
 }
 
-/* Add fade-in animation for smooth appearance */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 /* Modal content styles */
 dialog ul {
     list-style: none;
@@ -483,16 +432,6 @@ dialog::backdrop {
     animation: fadeInBackdrop 0.3s ease-in-out;
 }
 
-@keyframes fadeInBackdrop {
-    from {
-        background: rgba(0, 0, 0, 0);
-    }
-
-    to {
-        background: rgba(0, 0, 0, 0.5);
-    }
-}
-
 /* Close button */
 .close-dialog {
     align-self: flex-end;
@@ -509,18 +448,6 @@ dialog::backdrop {
 
 .close-dialog:hover {
     background-color: #CC1A00;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    dialog {
-        max-width: max-content;
-        padding: 15px;
-    }
-
-    dialog ul li {
-        font-size: 14px;
-    }
 }
 
 /* ========== Footer ========== */
@@ -548,6 +475,14 @@ footer {
     margin: 5px 0;
 }
 
+#footerLogo {
+    transition: filter 0.3s ease-in-out;
+}
+
+#footerLogo:hover {
+    filter: brightness(0.75);
+}
+
 footer a {
     color: #FF1E00;
     text-decoration: none;
@@ -556,7 +491,6 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
-
 
 /* ========== Loader source: https://loading.io/css/ ========== */
 
@@ -592,6 +526,8 @@ footer a:hover {
     animation-delay: -0.15s;
 }
 
+/* ========== Keyframe Animations ========== */
+
 @keyframes lds-ring {
     0% {
         transform: rotate(0deg);
@@ -599,6 +535,38 @@ footer a:hover {
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInBackdrop {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.5);
     }
 }
 
@@ -621,5 +589,14 @@ footer a:hover {
     td {
         font-size: 12px;
         padding: 6px;
+    }
+
+    dialog {
+        max-width: max-content;
+        padding: 15px;
+    }
+
+    dialog ul li {
+        font-size: 14px;
     }
 }
