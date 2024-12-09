@@ -124,5 +124,29 @@ export async function fetchConstructors() {
     }
 }
 
+/** Sort the table based on a column and type */
+export function sortTable(table, columnIndex, type, activeHeader) {
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
 
+    // Determine sorting order
+    const isAscending = !activeHeader.classList.contains("asc");
+    table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc")); // Reset all headers
+    activeHeader.classList.toggle("asc", isAscending);
+    activeHeader.classList.toggle("desc", !isAscending);
 
+    // Sort rows based on column content
+    rows.sort((a, b) => {
+        const cellA = a.children[columnIndex].textContent.trim();
+        const cellB = b.children[columnIndex].textContent.trim();
+
+        if (type === "number") {
+            return isAscending ? cellA - cellB : cellB - cellA;
+        } else {
+            return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+        }
+    });
+
+    // Re-append sorted rows to tbody
+    rows.forEach(row => tbody.appendChild(row));
+}

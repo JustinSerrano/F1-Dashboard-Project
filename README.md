@@ -44,6 +44,7 @@ The application retrieves data from the F1 API and emphasizes performance by uti
 │   ├── dataService.js      # Functions for API interaction
 │   ├── eventHandlers.js    # Event listener functions
 │   ├── initialize.js       # Application initialization logic
+│   ├── modals.js           # Modal-specific rendering and logic
 │   ├── uiHelper.js         # Functions for UI updates
 │   main.js                 # Main application driver
 ├── assets/
