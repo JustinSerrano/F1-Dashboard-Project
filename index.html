@@ -21,6 +21,7 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
     <header>
         <img id="homeLogo" src="logos/f1-logo.png" alt="F1 logo" height="100px" width="150px" />
         <h1>F1 Dashboard</h1>
+        <button id="favoritesButton" class="favorite-button">Favorites</button>
     </header>
     <main>
         <article id="home">
@@ -30,15 +31,19 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
             </div>
             <div class="project-info">
                 <h2>COMP 3512 - F1 Dashboard Project</h2>
-                <p>This project is a Single-Page Application (SPA) for viewing Formula 1 (F1) race data. The application allows users to browse races, view qualifying and race results, and explore details about circuits, drivers, and constructors.</p>
+                <p>This project is a Single-Page Application (SPA) for viewing Formula 1 (F1) race data. The application
+                    allows users to browse races, view qualifying and race results, and explore details about circuits,
+                    drivers, and constructors.</p>
                 <h3>Features</h3>
                 <ul>
                     <li>Home View: Brief description of the application and technologies used.</li>
-                    <li>Races View: Displays races sorted by round for a selected season, with sorting capabilities.</li>
+                    <li>Races View: Displays races sorted by round for a selected season, with sorting capabilities.
+                    </li>
                     <li>Dialogs/Popups:</li>
                     <ul>
                         <li><strong>Driver Details:</strong> Information about drivers and their race results.</li>
-                        <li><strong>Constructor Details:</strong> Information about constructors and their race results.</li>
+                        <li><strong>Constructor Details:</strong> Information about constructors and their race results.
+                        </li>
                         <li><strong>Circuit Details:</strong> Information about circuits.</li>
                     </ul>
                     <li>Favorite functionality for circuits, drivers, and constructors.</li>
@@ -53,7 +58,8 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
                 <h3>Contributors</h3>
                 <p><strong>Name:</strong> Justin Serrano</p>
                 <p><strong>Email:</strong> <a href="mailto:jserr538@mtroyal.ca">jserr538@mtroyal.ca</a></p>
-                <p><strong>GitHub:</strong> <a href="https://github.com/JustinSerrano" target="_blank">JustinSerrano</a></p>
+                <p><strong>GitHub:</strong> <a href="https://github.com/JustinSerrano" target="_blank">JustinSerrano</a>
+                </p>
             </div>
         </article>
         <article id="browse">
@@ -84,6 +90,11 @@ MRU logo: https://www.mtroyal.ca/AboutMountRoyal/MarketingCommunications/OurLogo
     <dialog id="constructor">
         <div id="constructorDetails"></div>
         <button id="closeConstructorDialog" class="close-dialog">Close</button>
+    </dialog>
+    </dialog>
+    <dialog id="favorite">
+        <div id="favoriteDetails"></div>
+        <button id="closeFavoriteDialog" class="close-dialog">Close</button>
     </dialog>
 </body>
 <footer>

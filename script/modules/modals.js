@@ -191,3 +191,35 @@ export async function showConstructorDetails(constructorName, year, resultsData)
         constructorDialog.showModal();
     }
 }
+
+// Function to display the list of favorite circuits, drivers, and constructors
+export function showFavorites() {
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
+
+    // Populate the circuits section
+    const favoriteCircuitsList = document.querySelector("#favoriteDetails");
+    favoriteCircuitsList.innerHTML = favorites.circuits.length
+        ? favorites.circuits
+            .map(
+                (circuit) => `
+            <li>
+                ${circuit}
+                <button class="remove-favorite" onclick="removeFavoriteCircuit('${circuit}')">Remove</button>
+            </li>
+        `
+            )
+            .join("")
+        : "<p>No favorite circuits yet!</p>";
+
+    // Similarly, add rendering logic for drivers and constructors if needed
+}
+
+// Function to remove a circuit from the favorites list
+export function removeFavoriteCircuit(circuitName) {
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
+    favorites.circuits = favorites.circuits.filter(fav => fav !== circuitName);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+
+    // Re-render the favorites dialog
+    showFavorites();
+}

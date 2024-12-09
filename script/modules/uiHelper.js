@@ -169,17 +169,32 @@ export function populateRaceDetails(race, qualifyingData, resultsData) {
         <li><strong>Race Name:</strong> ${race.name}</li>
         <li><strong>Rnd#:</strong> ${race.round}</li>
         <li><strong>Year:</strong> ${race.year}</li>
-        <li><strong>Circuit Name:</strong> <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
-            ${race.circuit.name}</button></li>
+        <li><strong>Circuit Name:</strong> 
+            <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
+            ${race.circuit.name}</button> 
+            <button class="favorite-icon" id="favoriteToggle" data-circuit-name='${race.circuit.name}'>
+            ★
+            </button></li>
         <li><strong>Date:</strong> ${race.date}</li>
         <li><strong>URL:</strong> <a href="${race.circuit.url}" target="_blank">${race.circuit.url}</a></li>
     `;
     raceInfo.appendChild(ul);
 
+    // Set the initial state for the icon
+    const favoriteIcon = ul.querySelector("#favoriteToggle");
+    setFavoriteIconState(race.circuit.name, favoriteIcon);
+
     raceInfo.addEventListener("click", (event) => {
-        if (event.target.matches(".hyperlink-style") && event.target.id === "circuitLink") {
+        // Handle circuit link
+        if (event.target.id === "circuitLink") {
             const circuitData = JSON.parse(event.target.dataset.circuit);
             showCircuitDetails(circuitData);
+        }
+
+        // Handle favorite toggle
+        if (event.target.matches("#favoriteToggle")) {
+            const circuitName = event.target.dataset.circuitName;
+            toggleFavoriteCircuit(circuitName, event.target);
         }
     });
 
@@ -252,4 +267,36 @@ export function populateTable(selector, title, data, race, headers, resultsData)
     tableClasses.forEach((cls) => table.classList.add(cls));
 
     container.appendChild(table);
+}
+
+/* ========== Favorite UI ========== */
+
+// Add/remove a circuit from favorites and update the UI.
+export function toggleFavoriteCircuit(circuitName, iconElement) {
+    // Fetch existing favorites from localStorage
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
+
+    // Toggle the circuit in the favorites array
+    if (favorites.circuits.includes(circuitName)) {
+        // Remove circuit from favorites
+        favorites.circuits = favorites.circuits.filter(fav => fav !== circuitName);
+        iconElement.style.color = ""; // Reset to default (blank)
+    } else {
+        // Add circuit to favorites
+        favorites.circuits.push(circuitName);
+        iconElement.style.color = "#FF1E00"; // Highlight the star
+    }
+
+    // Update localStorage
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+}
+
+// Set the initial state of the favorite icon based on stored favorites.
+export function setFavoriteIconState(circuitName, iconElement) {
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
+    if (favorites.circuits.includes(circuitName)) {
+        iconElement.style.color = "#FF1E00"; // Mark as favorite
+    } else {
+        iconElement.style.color = ""; // Default state
+    }
 }

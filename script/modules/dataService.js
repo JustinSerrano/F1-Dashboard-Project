@@ -150,3 +150,4 @@ export function sortTable(table, columnIndex, type, activeHeader) {
     // Re-append sorted rows to tbody
     rows.forEach(row => tbody.appendChild(row));
 }
+

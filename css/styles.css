@@ -101,6 +101,7 @@ main {
     border-radius: 4px;
     background-color: #fff;
     font-size: 2em;
+    text-align: center;
     width: 75%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -109,11 +110,16 @@ main {
     font-size: 1.25em;
     margin: 0px 100px 0px 100px;
     line-height: 1.75;
+    justify-self: center;
 }
 
-.project-info ul,
-p {
+.project-info p {
     margin: 20px 100px 20px 100px;
+}
+
+.project-info ul {
+    margin: 20px 60px 20px 60px;
+    justify-self: center;
 }
 
 /* ========== Browse Section ========== */
@@ -369,6 +375,37 @@ tr:hover {
     color: #CC1A00;
 }
 
+.favorite-button {
+    font-size: 16px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #FF1E00;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.favorite-button:hover {
+    background-color: #CC1A00;
+}
+
+.favorite-icon {
+    background: none;
+    border: none;
+    color: black;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.favorite-icon:hover {
+    color: #FF1E00;
+    transform: scale(1.5);
+}
+
+.favorite-icon.active {
+    color: #FF1E00;
+}
 
 /* ========== Modal Styles ========== */
 
@@ -383,6 +420,10 @@ dialog {
     flex-direction: column;
     gap: 15px;
     animation: fadeIn 0.3s ease-in-out;
+}
+
+dialog[open] {
+    display: flex;
 }
 
 /* Driver and Constructor details and race results layout */

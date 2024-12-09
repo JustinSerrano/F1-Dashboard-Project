@@ -4,7 +4,7 @@ This project has been developed with guidance and assistance from ChatGPT, a con
 */
 
 import { populateSeasons, navigateToHome } from './uiHelper.js';
-import { addDialogCloseListeners, addOutsideClickListeners } from './eventHandlers.js';
+import { addDialogListeners } from './eventHandlers.js';
 
 /**
  * Initializes the application, setting up initial states and event listeners.
@@ -49,8 +49,7 @@ export function initializeApp() {
         });
 
         // Add dialog close and outside click listeners
-        addDialogCloseListeners();
-        addOutsideClickListeners();
+        addDialogListeners();
     } catch (error) {
         console.error("Error initializing the application:", error);
     }
