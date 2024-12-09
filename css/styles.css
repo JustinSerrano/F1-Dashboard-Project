@@ -147,16 +147,16 @@ tr:hover {
 }
 
 /* Alternating row colors for driver page */
-.driver tbody tr:nth-child(odd) {
+.results tbody tr:nth-child(odd) {
     background-color: #FFFFFF;
 }
 
-.driver tbody tr:nth-child(even) {
+.results tbody tr:nth-child(even) {
     background-color: #F1F1F1;
 }
 
 /* Alternating row colors for constructor page */
-.constructor tbody tr:nth-child(4n-3),
+/* .constructor tbody tr:nth-child(4n-3),
 .constructor tbody tr:nth-child(4n-2) {
     background-color: #FFFFFF;
 }
@@ -167,23 +167,23 @@ tr:hover {
 }
 
 .constructor tbody tr:hover,
-.driver tbody tr:hover {
+.results tbody tr:hover {
     background-color: #D3D3D3;
-}
+} */
 
 /* Styling for results placement */
 /* 1st place - Gold */
-.placement table tr:first-child {
+.placement tbody tr:first-child {
     background-color: #FFD700;
 }
 
 /* 2nd place - Silver */
-.placement table tr:nth-child(2) {
+.placement tbody tr:nth-child(2) {
     background-color: #C0C0C0;
 }
 
 /* 3rd place - Bronze */
-.placement table tr:nth-child(3) {
+.placement tbody tr:nth-child(3) {
     background-color: #CD7F32;
 }
 

@@ -144,7 +144,7 @@ function displayRaces(racesData, qualifyingData, resultsData, season, loader, se
     const races = document.querySelector("#races");
     races.innerHTML = `<h2>${season} Races</h2>`;
 
-    const headers = ["Round", "Race Name"];
+    const headers = ["Rnd#", "Race Name"];
     const rows = racesData.sort((a, b) => a.round - b.round).map((race) => [
         race.round,
         createHyperlink(race.name, () => populateRaceDetails(race, qualifyingData, resultsData), "button-style")
@@ -192,8 +192,8 @@ function populateRaceDetails(race, qualifyingData, resultsData) {
         showCircuitDetails(race.circuit);
     });
 
-    populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"], resultsData);
-    populateTable("#results", "Race Results", resultsData, race, ["Position", "Driver", "Constructor", "Laps", "Points"], resultsData);
+    populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Pos#", "Driver", "Constructor", "Q1", "Q2", "Q3"], resultsData);
+    populateTable("#results", "Race Results", resultsData, race, ["Pos#", "Driver", "Constructor", "Laps", "Pts"], resultsData);
 
     resultsSection.style.display = "flex";
 }
@@ -202,6 +202,15 @@ function populateRaceDetails(race, qualifyingData, resultsData) {
 function populateTable(selector, title, data, race, headers, resultsData) {
     const container = document.querySelector(selector);
     container.innerHTML = `<h3>${title}</h3>`;
+
+    // Determine the class and id based on the selector
+    let tableId, tableClasses = ["results"]; // Default class is "results"
+    if (selector === "#qualifying") {
+        tableId = "qualifyingTable";
+    } else if (selector === "#results") {
+        tableId = "resultsTable";
+        tableClasses.push("placement"); // Add "placement" class for results table
+    }
 
     // Determine rows based on header context
     const rows = data
@@ -233,11 +242,16 @@ function populateTable(selector, title, data, race, headers, resultsData) {
             }
         });
 
-    container.appendChild(createTable(headers, rows));
+    // Create table and assign id and class
+    const table = createTable(headers, rows);
+    table.id = tableId;
+    tableClasses.forEach((cls) => table.classList.add(cls)); // Apply all classes
+
+    container.appendChild(table);
 }
 
 // Create hyperlink
-function createHyperlink(text, action, customeClass= "hyperlink-style") {
+function createHyperlink(text, action, customeClass = "hyperlink-style") {
     const link = document.createElement("button");
     link.textContent = text;
     link.classList.add(customeClass);
