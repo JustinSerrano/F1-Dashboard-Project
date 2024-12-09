@@ -29,7 +29,7 @@ export function populateSeasons() {
 
 /** Navigate to home section and reset relevant UI elements */
 export function navigateToHome(homeSection, browseSection) {
-    homeSection.style.display = "block";
+    homeSection.style.display = "flex";
     browseSection.style.display = "none";
 
     document.querySelector("#raceResults").style.display = "none";
