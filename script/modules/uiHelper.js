@@ -35,73 +35,69 @@ export function navigateToHome(homeSection, browseSection) {
     document.querySelector("#seasonList").value = "";
 }
 
-/** Sort table rows by the specified column */
-export function sortTable(table, columnIndex, type) {
+/** Sort the table based on a column and type */
+export function sortTable(table, columnIndex, type, activeHeader) {
     const tbody = table.querySelector("tbody");
     const rows = Array.from(tbody.querySelectorAll("tr"));
 
-    // Determine the sorting direction
-    const isAscending = table.getAttribute("data-sort-order") !== "asc";
-    table.setAttribute("data-sort-order", isAscending ? "asc" : "desc");
+    // Determine sorting order
+    const isAscending = !activeHeader.classList.contains("asc");
+    table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc")); // Reset all headers
+    activeHeader.classList.toggle("asc", isAscending);
+    activeHeader.classList.toggle("desc", !isAscending);
 
-    // Sort rows based on the column and data type
+    // Sort rows based on column content
     rows.sort((a, b) => {
         const cellA = a.children[columnIndex].textContent.trim();
         const cellB = b.children[columnIndex].textContent.trim();
 
         if (type === "number") {
             return isAscending ? cellA - cellB : cellB - cellA;
-        } else if (type === "string") {
-            return isAscending
-                ? cellA.localeCompare(cellB)
-                : cellB.localeCompare(cellA);
+        } else {
+            return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
         }
     });
 
-    // Append sorted rows back to the table body
+    // Re-append sorted rows to tbody
     rows.forEach(row => tbody.appendChild(row));
 }
 
-/** Highlight the currently sorted column */
-function highlightSortedColumn(headerRow, activeTh) {
-    Array.from(headerRow.children).forEach(th => th.classList.remove("sorted-column"));
-    activeTh.classList.add("sorted-column");
-}
 
 /* ========== Table and Reusable Components ========== */
 
 /** Create a table dynamically based on provided headers and rows */
-export function createTable(headers, rows) {
+export function createTable(headers, rows, tableId = "") {
     const table = document.createElement("table");
+    table.id = tableId;
+
+    // Create thead with headers
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-
     headers.forEach((header, index) => {
         const th = document.createElement("th");
-        if (typeof header === "object") {
-            // Allow header object with label and type
-            th.textContent = header.label;
-            th.dataset.sort = header.type;
-        } else {
-            // Default to string sorting if not specified
-            th.textContent = header;
-            th.dataset.sort = "string";
-        }
+        th.textContent = header.label || header;
+        th.dataset.sortIndex = index;
+        th.dataset.sortType = header.type || "string";
 
-        // Add sorting capability
-        th.addEventListener("click", () => {
-            sortTable(table, index, th.dataset.sort);
-            highlightSortedColumn(headerRow, th);
-        });
         headerRow.appendChild(th);
     });
 
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
+    // Create tbody with rows
     const tbody = document.createElement("tbody");
     rows.forEach((row) => {
         const tr = document.createElement("tr");
+
+        // Apply dynamic styling only for the resultsTable
+        if (tableId === "resultsTable") {
+            const position = parseInt(row[0], 10); // Convert first cell to a number
+            if (position === 1) tr.style.backgroundColor = "#FFD700"; // Gold
+            if (position === 2) tr.style.backgroundColor = "#C0C0C0"; // Silver
+            if (position === 3) tr.style.backgroundColor = "#CD7F32"; // Bronze
+        }
+
         row.forEach((cell) => {
             const td = document.createElement("td");
             if (cell instanceof HTMLElement) td.appendChild(cell);
@@ -110,9 +106,43 @@ export function createTable(headers, rows) {
         });
         tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
+
+    // Enable sorting for this table
+    enableTableSorting(table);
+
     return table;
+}
+
+/** Enable sorting functionality for a given table */
+export function enableTableSorting(table) {
+    const headers = table.querySelectorAll("thead th");
+    headers.forEach((header) => {
+        header.addEventListener("click", () => {
+            const columnIndex = header.dataset.sortIndex;
+            const type = header.dataset.sortType || "string";
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            // Determine sorting order
+            const isAscending = !header.classList.contains("asc");
+            table.querySelectorAll("th").forEach((th) => th.classList.remove("asc", "desc"));
+            header.classList.toggle("asc", isAscending);
+            header.classList.toggle("desc", !isAscending);
+
+            // Sort rows
+            rows.sort((a, b) => {
+                const cellA = a.children[columnIndex].textContent.trim();
+                const cellB = b.children[columnIndex].textContent.trim();
+                return type === "number"
+                    ? (isAscending ? cellA - cellB : cellB - cellA)
+                    : (isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA));
+            });
+
+            // Re-append sorted rows
+            rows.forEach((row) => tbody.appendChild(row));
+        });
+    });
 }
 
 /** Create a button styled as a hyperlink */
@@ -134,8 +164,11 @@ export function displayRaces(racesData, qualifyingData, resultsData, season, loa
     const races = document.querySelector("#races");
     races.innerHTML = `<h2>${season} Races</h2>`;
 
-    const headers = ["Rnd#", "Race Name"];
-    const rows = racesData.sort((a, b) => a.round - b.round).map((race) => [
+    const headers = [
+        { label: "Rnd#", type: "number" },
+        { label: "Race Name", type: "string" },
+    ];
+    const rows = racesData.map((race) => [
         race.round,
         createHyperlink(race.name, () => populateRaceDetails(race, qualifyingData, resultsData), "button-style"),
     ]);
@@ -151,12 +184,11 @@ export function populateRaceDetails(race, qualifyingData, resultsData) {
     // Clear existing content
     raceInfo.innerHTML = ""
 
-    // Create and append the <h2> element
+    // Add title and race details
     const h2 = document.createElement("h2");
     h2.textContent = `Results for ${race.year} ${race.name}`;
     raceInfo.appendChild(h2);
 
-    // Populate race info
     const ul = document.createElement("ul");
     ul.innerHTML = `
         <li><strong>Race Name:</strong> ${race.name}</li>
@@ -169,22 +201,31 @@ export function populateRaceDetails(race, qualifyingData, resultsData) {
     `;
     raceInfo.appendChild(ul);
 
-    // Attach a single event listener for all circuit links (delegation)
     raceInfo.addEventListener("click", (event) => {
-        const target = event.target;
-
-        // Ensure the click event is on a circuit link
-        if (target.matches(".hyperlink-style") && target.id === "circuitLink") {
-            const circuitData = target.dataset.circuit; // Retrieve circuit data from attribute
-            showCircuitDetails(JSON.parse(circuitData)); // Display details
+        if (event.target.matches(".hyperlink-style") && event.target.id === "circuitLink") {
+            const circuitData = JSON.parse(event.target.dataset.circuit);
+            showCircuitDetails(circuitData);
         }
     });
 
-    // Populate qualifying and results tables
-    populateTable("#qualifying", "Qualifying", qualifyingData, race, ["Pos#", "Driver", "Constructor", "Q1", "Q2", "Q3"], resultsData);
-    populateTable("#results", "Race Results", resultsData, race, ["Pos#", "Driver", "Constructor", "Laps", "Pts"], resultsData);
+    // Populate tables
+    populateTable("#qualifying", "Qualifying", qualifyingData, race, [
+        { label: "Pos#", type: "number" },
+        "Driver",
+        "Constructor",
+        "Q1",
+        "Q2",
+        "Q3",
+    ], resultsData);
 
-    // Show the results section
+    populateTable("#results", "Race Results", resultsData, race, [
+        { label: "Pos#", type: "number" },
+        "Driver",
+        "Constructor",
+        "Laps",
+        { label: "Pts", type: "number" },
+    ], resultsData);
+
     document.querySelector("#raceResults").style.display = "flex";
 }
 
@@ -193,18 +234,20 @@ export function populateTable(selector, title, data, race, headers, resultsData)
     const container = document.querySelector(selector);
     container.innerHTML = `<h3>${title}</h3>`;
 
+    // Determine table id and classes
     let tableId, tableClasses = ["results"];
     if (selector === "#qualifying") {
         tableId = "qualifyingTable";
     } else if (selector === "#results") {
         tableId = "resultsTable";
-        tableClasses.push("placement");
     }
 
+    // Generate table rows
     const rows = data
         .filter((item) => item.race.round === race.round)
         .map((item) => {
             if (headers.includes("Q1")) {
+                // For Qualifying Table
                 return [
                     item.position,
                     createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
@@ -216,6 +259,7 @@ export function populateTable(selector, title, data, race, headers, resultsData)
                     item.q3 || "-",
                 ];
             } else {
+                // For Race Results Table
                 return [
                     item.position,
                     createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
@@ -228,7 +272,7 @@ export function populateTable(selector, title, data, race, headers, resultsData)
             }
         });
 
-    const table = createTable(headers, rows);
+    const table = createTable(headers, rows, tableId);
     table.id = tableId;
     tableClasses.forEach((cls) => table.classList.add(cls));
 

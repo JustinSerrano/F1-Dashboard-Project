@@ -1,4 +1,8 @@
-/* styles/styles.css*/
+/* styles/styles.css
+
+This file includes styling guided with the help of ChatGPT (OpenAI) and W3School. 
+Flexbox layout, grid structure, and various design elements were part of the assistance.
+*/
 
 /* ========== General Styles ========== */
 
@@ -234,6 +238,25 @@ th {
     z-index: 1;
 }
 
+table th {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+table th:hover {
+    background-color: #FF1E00;
+}
+
+th.asc {
+    background-color: #FF1E00;
+    color: #fff;
+}
+
+th.desc {
+    background-color: #CC1A00;
+    color: #fff;
+}
+
 tr {
     background-color: #FFF;
 }
@@ -254,19 +277,6 @@ tr:hover {
 
 .results tbody tr:nth-child(even) {
     background-color: #F1F1F1;
-}
-
-/* Placement styles for race results */
-.placement tbody tr:first-child {
-    background-color: #FFD700;
-}
-
-.placement tbody tr:nth-child(2) {
-    background-color: #C0C0C0;
-}
-
-.placement tbody tr:nth-child(3) {
-    background-color: #CD7F32;
 }
 
 /* Scrollable table container */
