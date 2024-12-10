@@ -140,7 +140,6 @@ export function createFavoriteButton(name, type) {
 
     // Set initial state
     setFavoriteIconState(name, type, button);
-    console.log(button);
 
     button.addEventListener("click", () => {
         toggleFavorite(name, type, button);
@@ -214,6 +213,17 @@ export function populateRaceDetails(race, qualifyingData, resultsData) {
         if (event.target.id === "circuitLink") {
             const circuitData = JSON.parse(event.target.dataset.circuit);
             showCircuitDetails(circuitData);
+        }
+    });
+
+    // Last minute fix for toggling favorite for circuits
+    raceInfo.addEventListener("click", (event) => {
+        if (event.target.classList.contains("favorite-icon")) {
+            const name = event.target.dataset.favoriteName;
+            const type = event.target.dataset.favoriteType;
+    
+            console.log(`Delegated toggle favorite: Name=${name}, Type=${type}`);
+            toggleFavorite(name, type, event.target);
         }
     });
 
