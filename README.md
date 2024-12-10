@@ -32,6 +32,8 @@ The application retrieves data from the F1 API and emphasizes performance by uti
     - Event handling.
     - API interaction using `fetch`.
     - Modular structure for maintainability.
+- **Visual Studio Code**: Primary IDE used for developing and debugging the application.
+- **ChatGPT**: Assisted with planning, debugging, and optimizing code structure, UI design, and JavaScript logic.
 - **GitHub Pages**: Hosting the application.
 
 ## Folder Structure
