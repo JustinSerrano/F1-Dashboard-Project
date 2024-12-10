@@ -211,7 +211,27 @@ export function showFavorites() {
             .join("")
         : "<p>No favorite circuits yet!</p>";
 
-    // Similarly, add rendering logic for drivers and constructors if needed
+    // Populate drivers
+    const favoriteDriversList = document.querySelector("#favoriteDetails");
+    favoriteDriversList.innerHTML = favorites.drivers
+        .map((driver) => `
+            <li>
+                ${driver}
+                <button onclick="removeFavorite('${driver}', 'drivers')">Remove</button>
+            </li>
+        `)
+        .join("");
+
+    // Populate constructors
+    const favoriteConstructorsList = document.querySelector("#favoriteDetails");
+    favoriteConstructorsList.innerHTML = favorites.constructors
+        .map((constructor) => `
+            <li>
+                ${constructor}
+                <button onclick="removeFavorite('${constructor}', 'constructors')">Remove</button>
+            </li>
+        `)
+        .join("");
 }
 
 // Function to remove a circuit from the favorites list

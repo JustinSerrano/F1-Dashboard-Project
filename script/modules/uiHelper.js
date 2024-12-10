@@ -241,7 +241,7 @@ export function populateTable(selector, title, data, race, headers, resultsData)
                 return [
                     item.position,
                     createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
-                        showDriverDetails(item.driver.ref, item.race.year, resultsData)),
+                        showDriverDetails(item.driver.ref, item.race.year, resultsData)) ,
                     createHyperlink(item.constructor?.name, () =>
                         showConstructorDetails(item.constructor.name, item.race.year, resultsData)),
                     item.q1 || "-",
