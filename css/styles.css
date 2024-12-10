@@ -410,6 +410,7 @@ tr:hover {
 /* ========== Modal Styles ========== */
 
 dialog {
+    display: none;
     border: none;
     border-radius: 8px;
     padding: 20px;

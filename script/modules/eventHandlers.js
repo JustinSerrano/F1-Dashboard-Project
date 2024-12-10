@@ -70,16 +70,5 @@ export function attachLogoClickHandler(callback) {
     logo?.addEventListener("click", callback);
 }
 
-// Event listener for showing the favorites dialog
-export function addFavoritesDialogListener() {
-    const showFavoritesButton = document.querySelector("#showFavoritesButton");
-    const favoritesDialog = document.querySelector("#favorite");
-
-    showFavoritesButton?.addEventListener("click", () => {
-        favoritesDialog.style.display = "flex"; // Make the dialog visible
-        favoritesDialog.showModal(); // Open the dialog
-    });
-}
-
 
 
