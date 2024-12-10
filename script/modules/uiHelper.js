@@ -129,6 +129,26 @@ export function createHyperlink(text, action, customClass = "hyperlink-style") {
     return link;
 }
 
+/** Create a favorite button dynamically */
+export function createFavoriteButton(name, type) {
+    const button = document.createElement("button");
+    button.classList.add("favorite-icon");
+    button.id = "favoriteToggle";
+    button.dataset.favoriteName = name;
+    button.dataset.favoriteType = type;
+    button.textContent = "★";
+
+    // Set initial state
+    setFavoriteIconState(name, type, button);
+    console.log(button);
+
+    button.addEventListener("click", () => {
+        toggleFavorite(name, type, button);
+    });
+
+    return button;
+}
+
 /* ========== Content Population ========== */
 
 /** Display race data in a table */
@@ -169,32 +189,31 @@ export function populateRaceDetails(race, qualifyingData, resultsData) {
         <li><strong>Race Name:</strong> ${race.name}</li>
         <li><strong>Rnd#:</strong> ${race.round}</li>
         <li><strong>Year:</strong> ${race.year}</li>
-        <li><strong>Circuit Name:</strong> 
-            <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
-            ${race.circuit.name}</button> 
-            <button class="favorite-icon" id="favoriteToggle" data-circuit-name='${race.circuit.name}'>
-            ★
-            </button></li>
+        <li><strong>Circuit Name:</strong>`;
+
+    // Append Circuit Name with the Favorite Button
+    const circuitNameLi = document.createElement("li");
+    circuitNameLi.innerHTML = `
+        <strong>Circuit Name:</strong>
+        <button class="hyperlink-style" id="circuitLink" data-circuit='${JSON.stringify(race.circuit)}'>
+            ${race.circuit.name}
+        </button>
+    `;
+    const favoriteButton = createFavoriteButton(race.circuit.name, "circuits");
+    circuitNameLi.appendChild(favoriteButton);
+    ul.appendChild(circuitNameLi);
+
+    ul.innerHTML += `
         <li><strong>Date:</strong> ${race.date}</li>
         <li><strong>URL:</strong> <a href="${race.circuit.url}" target="_blank">${race.circuit.url}</a></li>
     `;
     raceInfo.appendChild(ul);
 
-    // Set the initial state for the icon
-    const favoriteIcon = ul.querySelector("#favoriteToggle");
-    setFavoriteIconState(race.circuit.name, favoriteIcon);
-
+    // Event listener for circuit details
     raceInfo.addEventListener("click", (event) => {
-        // Handle circuit link
         if (event.target.id === "circuitLink") {
             const circuitData = JSON.parse(event.target.dataset.circuit);
             showCircuitDetails(circuitData);
-        }
-
-        // Handle favorite toggle
-        if (event.target.matches("#favoriteToggle")) {
-            const circuitName = event.target.dataset.circuitName;
-            toggleFavoriteCircuit(circuitName, event.target);
         }
     });
 
@@ -240,10 +259,33 @@ export function populateTable(selector, title, data, race, headers, resultsData)
                 // For Qualifying Table
                 return [
                     item.position,
-                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
-                        showDriverDetails(item.driver.ref, item.race.year, resultsData)) ,
-                    createHyperlink(item.constructor?.name, () =>
-                        showConstructorDetails(item.constructor.name, item.race.year, resultsData)),
+                    // Driver column with favorite button
+                    (() => {
+                        const container = document.createElement("div");
+                        const nameLink = createHyperlink(
+                            `${item.driver?.forename || ""} ${item.driver?.surname}`,
+                            () => showDriverDetails(item.driver.ref, item.race.year, resultsData)
+                        );
+                        const favoriteButton = createFavoriteButton(
+                            `${item.driver?.forename || ""} ${item.driver?.surname}`,
+                            "drivers"
+                        );
+                        container.appendChild(nameLink);
+                        container.appendChild(favoriteButton);
+                        return container;
+                    })(),
+                    // Constructor column with favorite button
+                    (() => {
+                        const container = document.createElement("div");
+                        const nameLink = createHyperlink(
+                            item.constructor?.name,
+                            () => showConstructorDetails(item.constructor.name, item.race.year, resultsData)
+                        );
+                        const favoriteButton = createFavoriteButton(item.constructor?.name, "constructors");
+                        container.appendChild(nameLink);
+                        container.appendChild(favoriteButton);
+                        return container;
+                    })(),
                     item.q1 || "-",
                     item.q2 || "-",
                     item.q3 || "-",
@@ -252,10 +294,33 @@ export function populateTable(selector, title, data, race, headers, resultsData)
                 // For Race Results Table
                 return [
                     item.position,
-                    createHyperlink(`${item.driver?.forename || ""} ${item.driver?.surname}`, () =>
-                        showDriverDetails(item.driver.ref, item.race.year, resultsData)),
-                    createHyperlink(item.constructor?.name, () =>
-                        showConstructorDetails(item.constructor.name, item.race.year, resultsData)),
+                    // Driver column with favorite button
+                    (() => {
+                        const container = document.createElement("div");
+                        const nameLink = createHyperlink(
+                            `${item.driver?.forename || ""} ${item.driver?.surname}`,
+                            () => showDriverDetails(item.driver.ref, item.race.year, resultsData)
+                        );
+                        const favoriteButton = createFavoriteButton(
+                            `${item.driver?.forename || ""} ${item.driver?.surname}`,
+                            "drivers"
+                        );
+                        container.appendChild(nameLink);
+                        container.appendChild(favoriteButton);
+                        return container;
+                    })(),
+                    // Constructor column with favorite button
+                    (() => {
+                        const container = document.createElement("div");
+                        const nameLink = createHyperlink(
+                            item.constructor?.name,
+                            () => showConstructorDetails(item.constructor.name, item.race.year, resultsData)
+                        );
+                        const favoriteButton = createFavoriteButton(item.constructor?.name, "constructors");
+                        container.appendChild(nameLink);
+                        container.appendChild(favoriteButton);
+                        return container;
+                    })(),
                     item.laps || "-",
                     item.points || "-",
                 ];
@@ -271,32 +336,51 @@ export function populateTable(selector, title, data, race, headers, resultsData)
 
 /* ========== Favorite UI ========== */
 
-// Add/remove a circuit from favorites and update the UI.
-export function toggleFavoriteCircuit(circuitName, iconElement) {
-    // Fetch existing favorites from localStorage
+// Adding/removing items from favorites
+export function toggleFavorite(name, type, button) {
+    console.log(`Toggle favorite: Name=${name}, Type=${type}, Button=${button}`);
+
+    const validTypes = ["circuits", "drivers", "constructors"];
+    if (!validTypes.includes(type)) {
+        console.error(`Invalid type: ${type}. Must be one of: ${validTypes.join(", ")}`);
+        return;
+    }
+
     const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
 
-    // Toggle the circuit in the favorites array
-    if (favorites.circuits.includes(circuitName)) {
-        // Remove circuit from favorites
-        favorites.circuits = favorites.circuits.filter(fav => fav !== circuitName);
-        iconElement.style.color = ""; // Reset to default (blank)
+    if (favorites[type].includes(name)) {
+        // Remove from favorites
+        favorites[type] = favorites[type].filter(fav => fav !== name);
+        button.style.color = ""; // Default color
     } else {
-        // Add circuit to favorites
-        favorites.circuits.push(circuitName);
-        iconElement.style.color = "#FF1E00"; // Highlight the star
+        // Add to favorites
+        favorites[type].push(name);
+        button.style.color = "#FF1E00"; // Favorite color
     }
 
     // Update localStorage
     localStorage.setItem("favorites", JSON.stringify(favorites));
 }
 
-// Set the initial state of the favorite icon based on stored favorites.
-export function setFavoriteIconState(circuitName, iconElement) {
+// Ensures the icon reflects the current favorite state
+export function setFavoriteIconState(name, type, button) {
+    const validTypes = ["circuits", "drivers", "constructors"];
+    if (!validTypes.includes(type)) {
+        console.error(`Invalid type: ${type}. Must be one of: ${validTypes.join(", ")}`);
+        return;
+    }
+
+    if (!button) {
+        console.error(`Button is undefined for ${type}: ${name}`);
+        return;
+    }
+
     const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
-    if (favorites.circuits.includes(circuitName)) {
-        iconElement.style.color = "#FF1E00"; // Mark as favorite
+
+    if (favorites[type].includes(name)) {
+        button.style.color = "#FF1E00"; // Favorite color
     } else {
-        iconElement.style.color = ""; // Default state
+        button.style.color = ""; // Default color
     }
 }
+

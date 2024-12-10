@@ -196,50 +196,82 @@ export async function showConstructorDetails(constructorName, year, resultsData)
 export function showFavorites() {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
 
-    // Populate the circuits section
-    const favoriteCircuitsList = document.querySelector("#favoriteDetails");
-    favoriteCircuitsList.innerHTML = favorites.circuits.length
+    // Populate circuits section
+    const circuitsContainer = document.querySelector("#favoriteCircuits");
+    circuitsContainer.innerHTML = favorites.circuits.length
         ? favorites.circuits
             .map(
                 (circuit) => `
             <li>
                 ${circuit}
-                <button class="remove-favorite" onclick="removeFavoriteCircuit('${circuit}')">Remove</button>
+                <button class="remove-favorite" data-type="circuits" data-name="${circuit}">X</button>
             </li>
         `
             )
             .join("")
         : "<p>No favorite circuits yet!</p>";
 
-    // Populate drivers
-    const favoriteDriversList = document.querySelector("#favoriteDetails");
-    favoriteDriversList.innerHTML = favorites.drivers
-        .map((driver) => `
+    // Populate drivers section
+    const driversContainer = document.querySelector("#favoriteDrivers");
+    driversContainer.innerHTML = favorites.drivers.length
+        ? favorites.drivers
+            .map(
+                (driver) => `
             <li>
                 ${driver}
-                <button onclick="removeFavorite('${driver}', 'drivers')">Remove</button>
+                <button class="remove-favorite" data-type="drivers" data-name="${driver}">X</button>
             </li>
-        `)
-        .join("");
+        `
+            )
+            .join("")
+        : "<p>No favorite drivers yet!</p>";
 
-    // Populate constructors
-    const favoriteConstructorsList = document.querySelector("#favoriteDetails");
-    favoriteConstructorsList.innerHTML = favorites.constructors
-        .map((constructor) => `
+    // Populate constructors section
+    const constructorsContainer = document.querySelector("#favoriteConstructors");
+    constructorsContainer.innerHTML = favorites.constructors.length
+        ? favorites.constructors
+            .map(
+                (constructor) => `
             <li>
                 ${constructor}
-                <button onclick="removeFavorite('${constructor}', 'constructors')">Remove</button>
+                <button class="remove-favorite" data-type="constructors" data-name="${constructor}">X</button>
             </li>
-        `)
-        .join("");
+        `
+            )
+            .join("")
+        : "<p>No favorite constructors yet!</p>";
+
+    // Attach event listeners to all "Remove" buttons
+    const removeButtons = document.querySelectorAll(".remove-favorite");
+    removeButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+            const type = button.getAttribute("data-type");
+            const name = button.getAttribute("data-name");
+            removeFavorite(name, type);
+        });
+    });
 }
 
-// Function to remove a circuit from the favorites list
-export function removeFavoriteCircuit(circuitName) {
+
+
+// Function to remove an element from the favorites list
+export function removeFavorite(element, type) {
+    // Validate the type to ensure it matches one of the expected keys
+    if (!["circuits", "drivers", "constructors"].includes(type)) {
+        console.error(`Invalid type: ${type}. Must be 'circuits', 'drivers', or 'constructors'.`);
+        return;
+    }
+
+    // Fetch existing favorites from localStorage
     const favorites = JSON.parse(localStorage.getItem("favorites")) || { circuits: [], drivers: [], constructors: [] };
-    favorites.circuits = favorites.circuits.filter(fav => fav !== circuitName);
+
+    // Filter out the element from the specified type
+    favorites[type] = favorites[type].filter(fav => fav !== element);
+
+    // Update localStorage with the new favorites
     localStorage.setItem("favorites", JSON.stringify(favorites));
 
     // Re-render the favorites dialog
     showFavorites();
 }
+
